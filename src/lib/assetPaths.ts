@@ -68,9 +68,9 @@ export const ASSETS = {
   MUSHROOM_PRODUCT: v21,      // product placeholder photo
 
   // ── Veteran Stories ───────────────────────────────────────────────────────
-  STORY_JACK: v04,
-  STORY_KEANU: v05,
-  STORY_ELIJAH: v06,
+  STORY_JACK: v23,
+  STORY_KEANU: v24,
+  STORY_ELIJAH: v25,
 
   // ── Reviewer Avatars ──────────────────────────────────────────────────────
   REVIEWER_1: v29,  // Austin B.
