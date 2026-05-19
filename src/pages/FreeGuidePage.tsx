@@ -17,8 +17,8 @@ export default function FreeGuidePage() {
     <MainLayout>
       {/* Hero */}
       <section
-        className="relative min-h-[60vh] flex items-center bg-cover bg-center"
-        style={{ backgroundImage: `url(${ASSETS.GUIDE_BG})` }}
+        className="relative min-h-[70vh] lg:min-h-[80vh] flex items-center bg-brand-primary overflow-hidden w-full"
+        style={{ backgroundImage: `url(${ASSETS.FREE_GUIDE_ARMY})` }}
       >
         <div className="absolute inset-0 bg-brand-primary/75" aria-hidden="true" />
         <div className="relative container-site py-20 text-center">
@@ -32,12 +32,13 @@ export default function FreeGuidePage() {
         </div>
       </section>
 
-      <section className="bg-brand-cream-light py-16 lg:py-20">
+      <section className="bg-brand-cream-light py-16 lg:py-20"
+        style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})` }}   >
         <div className="container-site">
-          <div className="flex flex-col lg:flex-row gap-12 items-center max-w-5xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-12 items-center justify-between max-w-5xl mx-auto">
             {/* Form */}
             <div className="flex-1 max-w-lg w-full">
-              <p className="text-brand-dark font-semibold mb-3">
+              <p className="text-brand-dark font-bold mb-3">
                 At Veteran Healing, we empower veterans with science-backed microdosing practices —
                 rooted in faith, community, and holistic care. Sign up below to receive:
               </p>
@@ -47,13 +48,13 @@ export default function FreeGuidePage() {
                   "Evidence-based tips for mindful use and safety",
                   "Occasional updates on programs, events, and resources",
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
+                  <li key={item} className="flex items-start gap-2 text-lg text-gray-700">
                     <span className="text-brand-cta font-bold mt-0.5">✓</span>
                     {item}
                   </li>
                 ))}
               </ul>
-              <p className="text-gray-500 text-sm mb-8">100% free. No spam. Just genuine support.</p>
+              <p className="text-gray-500 text-lg mb-8">100% free. No spam. Just genuine support.</p>
 
               {submitted ? (
                 <div className="bg-brand-cta/10 border border-brand-cta/30 rounded-xl p-6 text-center">
@@ -82,7 +83,7 @@ export default function FreeGuidePage() {
             {/* Guide cover image */}
             <div className="flex-shrink-0">
               <img
-                src={ASSETS.FREE_GUIDE_COVER}
+                src={ASSETS.GUIDE_BG}
                 alt="Free Veteran Wellness Guide"
                 className="w-64 lg:w-80 h-auto rounded-2xl shadow-2xl"
                 loading="lazy"

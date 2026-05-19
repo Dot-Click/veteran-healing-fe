@@ -37,6 +37,7 @@ import v37 from "../assets/images/veteran37.webp";
 import v38 from "../assets/images/veteran38.webp";
 import v39 from "../assets/images/veteran39.svg";
 import v40 from "../assets/images/veteran40.svg";
+import v41 from "../assets/images/veteran41.webp";
 
 // ─── Icons ─────────────────────────────────────────────────────────────────
 import iconVeteranAssets from "../assets/icons/veteran assets.svg";
@@ -47,6 +48,7 @@ export const ASSETS = {
   // ── Hero ──────────────────────────────────────────────────────────────────
   HERO: hero,
   DISCLAIMER_BG: v36,
+  FREE_GUIDE_ARMY: v41,
 
   // ── Section Backgrounds ───────────────────────────────────────────────────
   HERO_BG: v01,         // dark moody veteran photo for hero overlay
@@ -96,7 +98,7 @@ export const ASSETS = {
   },
 
   // ── Additional images ─────────────────────────────────────────────────────
-  VETERAN_IMAGES: [v01, v02, v03, v04, v05, v06, v07, v08, v09, v10, v11, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34, v35, v36, v37, v38, v39, v40] as string[],
+  VETERAN_IMAGES: [v01, v02, v03, v04, v05, v06, v07, v08, v09, v10, v11, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34, v35, v36, v37, v38, v39, v40, v41] as string[],
 
   // ── Icons ─────────────────────────────────────────────────────────────────
   ICONS: {
