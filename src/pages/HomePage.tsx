@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Shield, Leaf, Users, Star, ChevronRight, ChevronLeft } from "lucide-react";
+import { Shield, Leaf, Users, Star, ChevronRight, ChevronLeft, Handshake } from "lucide-react";
 import { FacebookIcon } from "../components/common/SocialIcons";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
@@ -17,19 +17,24 @@ const IMPACT_STATS = [
 const MISSION_PILLARS = [
   {
     icon: Shield,
-    title: "VETERANS",
-    body: "Founded by those who served, for those who served. We understand the invisible wounds because we carry them too.",
+    title: "Veteran-Led",
+    body: "Founded and operated by veterans who understand the weight of service, trauma, and life after the uniform. This mission is built on lived experience — not theory.",
   },
   {
-    icon: Leaf,
-    title: "IN-HOUSE",
-    body: "Everything we offer is grown and handled in-house — never outsourced — so you receive the highest quality sacrament with full accountability.",
+    icon: Handshake,
+    title: "Faith & Sacrament",
+    body: "Our approach is rooted in spiritual grounding, conscience, and sacramental practice. Healing is treated with reverence, intention, and respect for each individual’s path.",
   },
   {
     icon: Users,
-    title: "NONPROFIT",
-    body: "100% of our profits go directly to veteran suicide prevention. Every purchase funds programs and initiatives fighting to bring that number down.",
+    title: "Mission-First Nonprofit",
+    body: "We do not operate for profit. 100% of proceeds directly support veteran suicide prevention, outreach, and healing initiatives.",
   },
+  {
+    icon: Leaf,
+    title: "Grown In-House",
+    body: "Everything we offer is cultivated and handled by our own team. No outsourcing. No third parties. Full accountability from start to finish.",
+  }
 ];
 
 const FAQ_ITEMS = [
@@ -498,29 +503,35 @@ export default function HomePage() {
       </section>
 
       {/* ─── What Veteran Healing Is ─── */}
-      <section className="bg-brand-cream-light py-20 lg:py-28 border-y border-brand-border/20">
+      <section className="bg-brand-primary py-20 lg:py-28 border-y border-brand-border/20">
         <div className="container-site">
-          <h2 className="text-3xl lg:text-4xl font-bold text-brand-dark text-center mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-white text-center mb-4">
             What Veteran Healing Is
           </h2>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-12 text-sm text-gray-700 font-semibold">
-            <span className="flex items-center gap-1.5"><span className="text-brand-cta font-bold">✓</span> Veterans Supporting Veterans</span>
-            <span className="flex items-center gap-1.5"><span className="text-brand-cta font-bold">✓</span> Grown In-House</span>
-            <span className="flex items-center gap-1.5"><span className="text-brand-cta font-bold">✓</span> Mission-First Nonprofit</span>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-12 text-sm text-gray-100 font-semibold">
+            <span className="flex items-center gap-1.5"><span className="text-brand-light text-lg font-bold">✓</span> Veterans Supporting Veterans</span>
+            <span className="flex items-center gap-1.5"><span className="text-brand-light text-lg font-bold">✓</span> Faith & Sacrament</span>
+            <span className="flex items-center gap-1.5"><span className="text-brand-light text-lg font-bold">✓</span> Mission-First Nonprofit</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
             {MISSION_PILLARS.map((pillar) => (
               <div
                 key={pillar.title}
-                className="group bg-white rounded-2xl p-8 shadow-sm border border-brand-border/20 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                className="group bg-gray-300 rounded-2xl p-8 shadow-sm border border-brand-border/20 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
               >
                 <div className="w-16 h-16 rounded-full bg-brand-cream flex items-center justify-center mx-auto mb-6 text-brand-cta transition-colors duration-300 group-hover:bg-brand-cta group-hover:text-white">
                   <pillar.icon size={24} />
                 </div>
                 <h3 className="font-semibold text-brand-dark text-lg mb-3">{pillar.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{pillar.body}</p>
+                <p className="text-brand-dark text-sm leading-relaxed">{pillar.body}</p>
               </div>
             ))}
+          </div>
+
+          <div className="flex justify-center mt-12">
+            <Link to="/about" className="btn-primary text-black border border-white py-3 px-6 rounded-lg text-center font-semibold transition-all hover:text-brand-primary hover:border-gray-100 hover:bg-gray-100/90 ">
+              Learn About Our Mission
+            </Link>
           </div>
         </div>
       </section>
