@@ -15,7 +15,7 @@ const FAITH_POINTS = [
   {
     num: 3,
     title: "Commitment To Service:",
-    body: "Our faith inspires us to serve others selflessly. We are dedicated to providing comprehensive support and resources to veterans, recognizing their unique needs and the sacrifices they've made for our country.",
+    body: "Our faith inspires us to serve others selflessly. We are dedicated to providing comprehensive support and resources to veterans, recognizing their unique needs and the sacrifices they’ve made for our country.",
   },
   {
     num: 4,
@@ -44,8 +44,8 @@ export default function StatementOfFaithPage() {
     <MainLayout>
       {/* Hero */}
       <section
-        className="relative h-52 lg:h-72 flex items-center bg-cover bg-center"
-        style={{ backgroundImage: `url(${ASSETS.FAITH_BG})` }}
+        className="relative min-h-[50vh] lg:min-h-[80vh] flex items-center bg-brand-primary overflow-hidden w-full"
+        style={{ backgroundImage: `url(${ASSETS.SLIDER_1})` }}
       >
         <div className="absolute inset-0 bg-brand-primary/70" aria-hidden="true" />
         <div className="relative container-site text-center w-full">
@@ -53,9 +53,10 @@ export default function StatementOfFaithPage() {
         </div>
       </section>
 
-      <section className="bg-brand-cream-light py-16 lg:py-20">
+      <section className="bg-green-100 py-16 lg:py-20"
+        style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})` }}  >
         <div className="container-site max-w-3xl mx-auto">
-          <p className="text-gray-700 leading-relaxed mb-10 text-sm">
+          <p className="text-gray-700 leading-relaxed mb-10 text-lg font-bold">
             At Veteran Healing, our mission is rooted in the belief that every individual, particularly
             those who have served in the armed forces, deserves holistic healing and restoration. Our
             faith serves as the cornerstone of our organization, guiding our actions, principles, and
@@ -68,7 +69,7 @@ export default function StatementOfFaithPage() {
                 <h2 className="text-lg font-bold text-brand-dark mb-2">
                   {point.num}. {point.title}
                 </h2>
-                <p className="text-gray-600 text-sm leading-relaxed">{point.body}</p>
+                <p className="text-gray-600 text-lg leading-relaxed">{point.body}</p>
               </div>
             ))}
           </div>
