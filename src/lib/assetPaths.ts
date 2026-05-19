@@ -46,6 +46,7 @@ import iconVeteran13 from "../assets/icons/veteran13.svg";
 export const ASSETS = {
   // ── Hero ──────────────────────────────────────────────────────────────────
   HERO: hero,
+  DISCLAIMER_BG: v36,
 
   // ── Section Backgrounds ───────────────────────────────────────────────────
   HERO_BG: v01,         // dark moody veteran photo for hero overlay
@@ -81,7 +82,7 @@ export const ASSETS = {
   REVIEWER_6: v34,  // Rebecca L.
 
   // ── Gallery Strip ─────────────────────────────────────────────────────────
-  GALLERY: [v04, v26, v27, v28, v29, v30] as string[],
+  GALLERY: [v20, v21, v22] as string[],
 
   // ── Product Images (placeholder until client provides real ones) ──────────
   PRODUCTS: {

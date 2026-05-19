@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Shield, Leaf, Users, Star, ChevronRight, ChevronLeft, Handshake } from "lucide-react";
-import { FacebookIcon } from "../components/common/SocialIcons";
+import { Shield, Leaf, Users, Star, ChevronRight, ChevronLeft, Handshake, ChevronDown } from "lucide-react";
+import { FacebookIcon, InstagramIcon } from "../components/common/SocialIcons";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
 import { FEATURED_PRODUCTS } from "../data/mockProducts";
@@ -39,22 +39,63 @@ const MISSION_PILLARS = [
 
 const FAQ_ITEMS = [
   {
-    q: "Are your sacraments legal?",
-    a: "All sacraments are for research, religious, ceremonial, novelty, or souvenir purposes only. Follow all local, state, and federal laws. We do not encourage illegal use.",
+    q: "Do your products contain psilocybin?",
+    a: "Yes, all our products contain real psilocybin. We are dedicated to providing natural healing alternatives to support mental health and well-being, especially for veterans.",
   },
   {
-    q: "How are your products grown?",
-    a: "Everything is grown in-house in our veteran-operated facility. No third parties. No shortcuts. Full accountability from start to finish.",
+    q: "What is the dosage?",
+    a: "Dosage varies depending on individual sensitivity and goals. Our Free Microdose Guide provides comprehensive, step-by-step instructions on safe dosage and schedules.",
   },
   {
-    q: "What is the Free Microdose Guide?",
-    a: "A free educational resource we offer to the veteran community covering evidence-based microdosing practices, rooted in faith and community support.",
+    q: "What are the side effects?",
+    a: "At microdose levels, side effects are minimal but may include mild stomach discomfort or slight changes in perception. Always start with a low dose to evaluate tolerance.",
   },
   {
-    q: "How do you support veteran suicide prevention?",
-    a: "100% of profits go directly to veteran suicide prevention programs and initiatives. Through awareness, community, and holistic healing — we're fighting to lower that 22-a-day number.",
+    q: "Is it legal?",
+    a: "All sacraments are offered for research, religious, ceremonial, novelty, or souvenir purposes only. Please follow all local, state, and federal laws.",
+  },
+  {
+    q: "Do you ship discrete?",
+    a: "Yes, all orders are shipped in plain, unmarked packaging to ensure complete privacy and discretion.",
+  },
+  {
+    q: "What is your return policy?",
+    a: "Due to the nature of our sacraments, all donations and orders are final. However, if there is an issue with your delivery, please contact our support team.",
+  },
+  {
+    q: "How can I contact customer service?",
+    a: "You can reach us through our contact page, join our private Facebook group, or email support@veteranhealing.org for direct assistance.",
+  },
+  {
+    q: "How long does shipping take?",
+    a: "Orders are typically processed within 1-2 business days, and shipping usually takes 3-5 business days depending on your location.",
+  },
+  {
+    q: "Where do you ship from?",
+    a: "All sacraments are grown, processed, and shipped directly from our veteran-operated facility in the United States.",
+  },
+  {
+    q: "Can I track my order?",
+    a: "Yes, once your order is processed, you will receive a confirmation email containing tracking details to monitor your delivery.",
+  },
+  {
+    q: "Do you have an affiliate program?",
+    a: "Yes, we have a rewarding affiliate program. You can learn more and sign up by clicking the 'Become an Affiliate' button at the bottom of our homepage.",
+  },
+  {
+    q: "Do you offer veteran discounts?",
+    a: "Yes, we offer special support and resources specifically tailored for veterans and active duty members. Contact us for details.",
+  },
+  {
+    q: "What is the shelf life of sacraments?",
+    a: "When stored properly, our dried mushroom sacraments and capsules can maintain potency for up to 1-2 years.",
+  },
+  {
+    q: "How should I store them?",
+    a: "Store in a cool, dry, and dark place in an airtight container, away from direct sunlight, moisture, and heat.",
   },
 ];
+
 
 const HERO_SLIDES = [
   {
@@ -151,6 +192,7 @@ export default function HomePage() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -345,7 +387,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── Social Proof / Reviews Carousel ─── */}
-      <section className="bg-green-800 py-20 lg:py-28 relative overflow-hidden" aria-label="Reviews and Testimonials">
+      <section className="bg-brand-primary py-20 lg:py-28 relative overflow-hidden" aria-label="Reviews and Testimonials">
         <div className="container-site">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
@@ -537,7 +579,8 @@ export default function HomePage() {
       </section>
 
       {/* ─── Impact Stats ─── */}
-      <section className="bg-brand-cream-light py-20 lg:py-28" aria-label="Impact and statistics">
+      <section className="bg-brand-cream-light py-20 lg:py-28" aria-label="Impact and statistics"
+        style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'contain' }}>
         <div className="container-site">
           {/* Top Images Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
@@ -559,11 +602,19 @@ export default function HomePage() {
             <h2 className="text-3xl lg:text-4xl font-bold text-brand-dark mb-6 leading-snug">
               Supporting Veteran Suicide Awareness and Prevention with Veteran Healing
             </h2>
-            <p className="text-gray-600 mb-12 text-sm md:text-base leading-relaxed">
-              Every day, countless veterans return home carrying invisible wounds — PTSD, depression,
-              and the heavy weight of survivor's guilt. Traditional treatments often aren't enough, and
-              many never find the alternatives they desperately need. That's why we exist: to offer
-              natural, holistic healing and a community that understands.
+            <h2 className="text-2xl lg:text-3xl font-bold text-brand-cta mb-6">Why We Do This</h2>
+            <p className="text-brand-primary mb-12 text-md md:text-xl leading-relaxed">
+              Everyday, 22 veterans die by suicide. <br />
+              We don’t just talk about it  we act. <br /><br />
+
+              At <b>Veteran Healing</b>, we’re on the front lines of <b>suicide prevention</b> through natural, sacramental healing.
+              This fight is personal. <br />These are our brothers and sisters. <br />
+
+              “These microdoses saved my life.” <br />
+              — Marine Veteran, AZ <br /><br />
+
+              “Finally felt peace.” <br />
+              — Army Vet, TX
             </p>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 border-t border-brand-border/20 pt-12">
@@ -579,7 +630,8 @@ export default function HomePage() {
       </section>
 
       {/* ─── My Story Section ─── */}
-      <section className="bg-brand-primary text-white py-20 lg:py-28 relative" aria-label="My Story">
+      <section className="bg-brand-primary text-white py-20 lg:py-28 relative" aria-label="My Story"
+        style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="container-site">
           {/* Top Images Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
@@ -599,25 +651,32 @@ export default function HomePage() {
           {/* Story Content */}
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl lg:text-4xl font-bold mb-6">My Story</h2>
-            <div className="space-y-4 text-gray-200 text-sm md:text-base leading-relaxed mb-10">
-              <p>
-                Founded by a veteran who found healing through these natural sacraments.
+            <div className="space-y-4 text-gray-200 text-lg md:text-base leading-relaxed mb-10">
+              <p className="font-semibold text-lg">
+                Coming home was supposed to be the easy part. <br />
+                But it wasn’t.
               </p>
-              <p>
-                After struggling with PTSD, anxiety, and depression, the journey to recovery led to the creation of Veteran Healing.
+              <p className="font-semibold text-lg">
+                I’m Jack Delli Priscoli, United States Air Force, missile munitions. <br />
+                I left the military searching for peace, but I felt lost. <br />
+                No structure. No brotherhood. Just the weight of memories I couldn’t shake.
               </p>
-              <p>
-                Now, we help other veterans find their path to wellness and support suicide prevention.
+              <p className="font-semibold text-lg">
+                Then I found mushrooms, not recreational, not a trend, but something real, natural, and ancient. <br />
+                Learning to grow them brought clarity, calm, and purpose back into my life.
               </p>
-              <p className="font-semibold text-white">
-                Join us in our mission to save lives. 100% of our profits go toward supporting veteran wellness.
+              <p className="font-bold text-lg text-white">
+                That’s why in 2021, I started Veteran Healing to help other veterans find their way forward, break the silence, and heal through a natural, faith-based path. <br />
+                <br />
+                For the ones we lost. <br />
+                And the ones still fighting.
               </p>
             </div>
 
             <div className="flex justify-center">
               <Link
                 to="/affiliate"
-                className="inline-flex items-center gap-2 bg-white text-brand-primary font-bold px-8 py-4 rounded-lg shadow-md hover:bg-brand-gold hover:text-brand-dark transition-all duration-300 transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 bg-white text-brand-primary font-bold px-8 py-4 rounded-lg shadow-md hover:bg-brand-dark hover:text-white transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 Become an Affiliate
               </Link>
@@ -628,104 +687,155 @@ export default function HomePage() {
 
 
 
-      {/* ─── Mission Image Strip ─── */}
-      <section className="bg-brand-cream py-4">
+      {/* ─── Social Media Section ─── */}
+      <section className="bg-white py-16 border-t border-brand-border/10" aria-label="Social Media Feed">
         <div className="container-site">
-          <div className="grid grid-cols-3 lg:grid-cols-5 gap-2">
-            {ASSETS.GALLERY.slice(0, 5).map((src, idx) => (
-              <div
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-brand-dark flex items-center justify-center gap-2">
+              <InstagramIcon size={28} className="text-brand-cta text-brand-primary" />
+              Follow Us on Instagram
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-5xl mx-auto">
+            {[
+              ASSETS.GUIDE_BG,
+              ASSETS.GALLERY[0],
+              ASSETS.GALLERY[1],
+              ASSETS.GALLERY[2],
+              ASSETS.GALLERY[3]
+            ].map((src, idx) => (
+              <a
                 key={idx}
-                className="aspect-square bg-brand-border/20 rounded-lg overflow-hidden"
+                href="https://www.instagram.com/veteranhealing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative group aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 block"
               >
                 <img
                   src={src}
-                  alt={`Veteran Healing community image ${idx + 1}`}
-                  className="w-full h-full object-cover"
+                  alt={`Instagram post ${idx + 1}`}
+                  className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
                   loading="lazy"
                 />
-              </div>
+                <div className="absolute inset-0 bg-brand-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <InstagramIcon size={32} className="text-white transform scale-75 group-hover:scale-100 transition-transform duration-300" />
+                </div>
+              </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Join Mission CTA ─── */}
-      <section className="bg-brand-cream-light py-16 lg:py-20">
-        <div className="container-site text-center max-w-3xl mx-auto">
-          <h2 className="text-2xl lg:text-3xl font-bold text-brand-dark mb-4">
-            Join our mission. Stand with veterans. Help save lives.
+      {/* ─── Free Guide Middle Callout ─── */}
+      <section className="bg-brand-primary text-white py-16 text-center relative overflow-hidden" aria-label="Free Microdose Guide Callout">
+        {/* Decorative background overlay */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `radial-gradient(circle at center, #F5A623 0%, transparent 70%)`
+          }}
+        />
+        <div className="container-site relative z-10 max-w-4xl mx-auto px-4">
+          <span className="text-[#F5A623] text-xs md:text-sm font-bold uppercase tracking-wider block mb-3">
+            LIMITED QUANTITIES. FREE FOR ACTIVE DUTY, VETERANS &amp; IMMEDIATE FAMILY MEMBERS
+          </span>
+          <h2 className="text-2xl md:text-4xl font-extrabold mb-6 leading-tight">
+            Free Comprehensive Microdose Guide + Audiobook
           </h2>
-          <p className="text-gray-600 leading-relaxed mb-4 text-sm">
-            <strong>At Veteran Healing, we're on a mission to save veterans' lives.</strong>
+          <p className="text-gray-200 text-sm md:text-base max-w-xl mx-auto mb-8">
+            Learn how to safely cultivate and integrate natural sacraments for relief and healing.
           </p>
-          <p className="text-gray-600 leading-relaxed mb-4 text-sm">
-            Every day, an average of 22 veterans die by suicide. We don't just talk about the problem
-            — we act. <strong>100% of our profits go directly to veteran suicide prevention.</strong>{" "}
-            Every dollar supports programs and initiatives designed to help bring that number down.
-          </p>
-          <p className="text-gray-600 leading-relaxed mb-8 text-sm">
-            Through awareness, resources, and a strong community, we fight to ensure every veteran
-            gets the support and care they deserve. Join us — together, we can honor their sacrifice,
-            end the stigma, and bring hope to those still in the fight.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/about" className="btn-primary">
-              Get Involved
-            </Link>
-            <Link to="/donation" className="btn-secondary">
-              Donate
-            </Link>
-            <Link to="/reviews" className="btn-secondary">
-              Read Reviews
+          <div className="flex justify-center">
+            <Link
+              to="/free-guide"
+              className="inline-flex items-center gap-2 bg-[#F5A623] text-brand-primary hover:bg-white hover:text-brand-primary transition-all duration-300 font-extrabold px-10 py-4 rounded-lg shadow-lg transform hover:-translate-y-0.5 uppercase tracking-wider text-sm md:text-base"
+            >
+              GET MY FREE COPY NOW
             </Link>
           </div>
+          <p className="text-gray-300 text-xs mt-4">100% free. No spam. Just genuine support.</p>
         </div>
       </section>
 
       {/* ─── FAQ ─── */}
-      <section className="bg-brand-cream py-16">
-        <div className="container-site max-w-3xl mx-auto">
-          <h2 className="text-2xl lg:text-3xl font-bold text-brand-dark text-center mb-10">
+      <section className="bg-brand-cream-light py-20 lg:py-28 border-t border-brand-border/10" aria-label="Frequently Asked Questions">
+        <div className="container-site max-w-4xl mx-auto px-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-brand-dark text-center mb-12">
             Frequently Asked Questions
           </h2>
+
           <div className="space-y-4">
-            {FAQ_ITEMS.map((item) => (
-              <details
-                key={item.q}
-                className="bg-white rounded-xl border border-brand-border/30 p-5 group"
-              >
-                <summary className="font-semibold text-brand-dark cursor-pointer list-none flex justify-between items-center gap-4">
-                  {item.q}
-                  <ChevronRight
-                    size={16}
-                    className="flex-shrink-0 text-brand-cta group-open:rotate-90 transition-transform"
-                  />
-                </summary>
-                <p className="mt-3 text-gray-600 text-sm leading-relaxed">{item.a}</p>
-              </details>
-            ))}
+            {FAQ_ITEMS.map((item, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl border border-brand-border/20 shadow-sm overflow-hidden transition-all duration-300"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className={`w-full text-left px-6 py-5 flex justify-between items-center gap-4 transition-all duration-300 ${isOpen ? "bg-brand-primary text-white" : "bg-white hover:bg-brand-cream-light/30 text-brand-dark"
+                      }`}
+                    aria-expanded={isOpen}
+                  >
+                    <span className="font-bold text-sm sm:text-base md:text-lg">
+                      {item.q}
+                    </span>
+                    <ChevronDown
+                      size={20}
+                      className={`flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#F5A623]" : "text-brand-cta"
+                        }`}
+                    />
+                  </button>
+
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+                      }`}
+                  >
+                    <div className="px-6 pb-6 pt-1 text-gray-600 text-sm sm:text-base leading-relaxed border-t border-brand-border/5">
+                      {item.a}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ─── Payment Methods ─── */}
-      <section className="bg-brand-cream-light py-10">
-        <div className="container-site text-center">
-          <p className="text-gray-600 text-sm mb-4 font-medium">Safe and Secure Payment Options</p>
-          <p className="text-xs text-gray-500 mb-4">These platforms are used on our checkout page</p>
-          <div className="flex justify-center items-center gap-6">
-            {/* PENDING: Replace with real payment processor logos when client confirms processor */}
-            <div className="flex items-center gap-1.5 bg-[#00d632] text-white font-bold text-sm px-4 py-2 rounded-lg h-10">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-              </svg>
-              Cash App
+      <section className="bg-gray-200 py-16 border-t border-brand-border/10">
+        <div className="container-site text-center max-w-3xl mx-auto">
+          <h2 className="text-4xl font-bold text-brand-dark mb-2">
+            Safe and Secure Payment Options
+          </h2>
+          <p className="text-lg text-gray-500 mb-8 font-medium">
+            We offer secure payments via Cash App and Zelle
+          </p>
+
+          <div className="flex justify-center items-center gap-12">
+            {/* Cash App Card */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-2xl bg-[#00D632] flex items-center justify-center shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                <span className="text-white text-3xl font-extrabold select-none">$</span>
+              </div>
+              <span className="text-brand-dark font-bold text-sm tracking-wide">
+                Cash App
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#6d1ed4] text-white font-bold text-sm px-4 py-2 rounded-lg h-10">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
-                <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12zm10-4a4 4 0 100 8 4 4 0 000-8z" />
-              </svg>
-              Zelle
+
+            {/* Zelle Card */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-2xl bg-[#7414CA] flex items-center justify-center shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" className="w-7 h-7 text-white select-none">
+                  <path d="M18 5H6l12 14H6" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 3v18" strokeLinecap="round" />
+                </svg>
+              </div>
+              <span className="text-brand-dark font-bold text-sm tracking-wide">
+                Zelle
+              </span>
             </div>
           </div>
         </div>

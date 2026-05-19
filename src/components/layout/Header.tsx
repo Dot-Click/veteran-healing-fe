@@ -15,21 +15,13 @@ export default function Header() {
   return (
     <>
       <header className="bg-brand-cream-light border-b border-brand-border sticky top-0 z-30 shadow-sm"
-      style={{ backgroundImage: `url(${ASSETS.HEADER_BG })`, backgroundSize: 'cover' }}>
+        style={{ backgroundImage: `url(${ASSETS.HEADER_BG})`, backgroundSize: 'cover' }}>
         <div className="container-site">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Mobile hamburger */}
-            <button
-              className="lg:hidden p-2 text-brand-primary hover:text-brand-cta transition-colors"
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open navigation menu"
-            >
-              <Menu size={24} />
-            </button>
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
-            <img src="/logo.webp" alt="Veteran Healing Logo" className="w-[70px]" />
+              <img src="/logo.webp" alt="Veteran Healing Logo" className="w-[70px]" />
               {/* <img src={veter} alt="" /> */}
             </Link>
 
@@ -80,6 +72,14 @@ export default function Header() {
               >
                 <User size={20} />
               </Link>
+              {/* Mobile hamburger */}
+              <button
+                className="lg:hidden p-2 text-brand-primary hover:text-brand-cta transition-colors"
+                onClick={() => setMobileOpen(true)}
+                aria-label="Open navigation menu"
+              >
+                <Menu size={24} />
+              </button>
             </div>
           </div>
         </div>

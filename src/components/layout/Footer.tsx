@@ -37,18 +37,19 @@ export default function Footer() {
             {/* Brand column */}
             <div className="sm:col-span-2 lg:col-span-1">
               <Link to="/" className="inline-flex items-center gap-2 mb-4 group">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-gold/20 border border-brand-gold/40">
+                <img src="/logo.webp" alt="" className="w-24 h-auto" />
+                {/* <span className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-gold/20 border border-brand-gold/40">
                   <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6" aria-hidden="true">
                     <ellipse cx="16" cy="11" rx="10" ry="7" fill="#F5A623" opacity="0.85"/>
                     <path d="M6 11 Q16 22 26 11" stroke="#F5A623" strokeWidth="1.5" fill="none"/>
                     <path d="M16 11 L16 28" stroke="#F5F5DC" strokeWidth="2" strokeLinecap="round"/>
                     <path d="M11 22 Q16 20 21 22" stroke="#F5F5DC" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
                   </svg>
-                </span>
-                <span className="flex flex-col leading-tight">
+                </span> */}
+                {/* <span className="flex flex-col leading-tight">
                   <span className="text-brand-gold font-bold text-sm tracking-wide uppercase">Veteran Healing</span>
                   <span className="text-gray-500 text-xs tracking-widest uppercase">By Vets · For Vets</span>
-                </span>
+                </span> */}
               </Link>
               <p className="text-gray-400 text-sm leading-relaxed mb-4">
                 A veteran-founded 501(c)(3) nonprofit dedicated to natural, holistic healing for those
