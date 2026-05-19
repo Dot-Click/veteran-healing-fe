@@ -8,28 +8,27 @@ export default function ReviewsPage() {
     <MainLayout>
       {/* Hero */}
       <section
-        className="relative h-52 lg:h-72 flex items-center bg-cover bg-center"
+        className="relative min-h-[70vh] lg:min-h-[80vh] flex items-center bg-brand-primary overflow-hidden w-full"
         style={{ backgroundImage: `url(${ASSETS.REVIEWS_BG})` }}
       >
         <div className="absolute inset-0 bg-brand-primary/60" aria-hidden="true" />
         <div className="relative container-site text-center w-full">
-          <p className="text-brand-gold text-sm uppercase tracking-widest mb-2">
-            ← Click Here To Read Reviews
-          </p>
-          <h1 className="text-4xl lg:text-5xl font-bold text-white">Reviews</h1>
+          <h1 className="text-5xl lg:text-6xl font-bold text-white">Reviews</h1>
         </div>
       </section>
 
-      <section className="bg-white py-16 lg:py-20">
+      <section className="bg-white py-16 lg:py-20"
+        style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})` }}
+      >
         <div className="container-site">
-          <h2 className="text-2xl lg:text-3xl font-bold text-brand-dark text-center mb-3">
+          <h2 className="text-3xl lg:text-4xl font-bold text-brand-primary text-center mb-3">
             What Our Community Is Saying
           </h2>
-          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-4 text-sm leading-relaxed">
+          <p className="text-brand-primary text-center max-w-2xl mx-auto mb-4 text-lg leading-relaxed">
             At Veteran Healing, we don't just make wellness products — we build trust, support, and
             transformation.
           </p>
-          <p className="text-gray-600 text-center text-sm mb-12">
+          <p className="text-brand-primary text-center text-lg mb-12">
             Here's what real veterans and supporters have to say about their experience with our
             handcrafted remedies:
           </p>
