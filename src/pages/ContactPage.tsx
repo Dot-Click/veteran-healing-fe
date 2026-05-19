@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle, PhoneCallIcon } from "lucide-react";
 import { FacebookIcon } from "../components/common/SocialIcons";
 import { CONTACT_INFO, SOCIAL_LINKS } from "../lib/constants";
 import { ASSETS } from "../lib/assetPaths";
@@ -19,13 +19,13 @@ export default function ContactPage() {
     <MainLayout>
       {/* Hero */}
       <section
-        className="relative h-52 lg:h-72 flex items-center bg-cover bg-center"
-        style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})` }}
+        className="relative min-h-[50vh] lg:min-h-[60vh] flex items-center bg-brand-primary overflow-hidden w-full"
+        style={{ backgroundImage: `url(${ASSETS.SLIDER_3})`, backgroundPosition: "center" }}
       >
         <div className="absolute inset-0 bg-brand-primary/70" aria-hidden="true" />
         <div className="relative container-site text-center w-full">
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">Contact Us</h1>
-          <p className="text-gray-200 text-sm max-w-md mx-auto">
+          <p className="text-gray-200 text-lg max-w-md mx-auto">
             We'd love to hear from you! Whether you have questions, need assistance with your order,
             or just want to chat about all things fungi, feel free to reach out.
           </p>
@@ -63,7 +63,7 @@ export default function ContactPage() {
                   className="flex items-start gap-4 bg-white rounded-xl p-4 border border-brand-border/20 hover:border-brand-cta transition-colors group"
                 >
                   <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-base">🇺🇸</span>
+                    <PhoneCallIcon size={16} className="text-white" />
                   </div>
                   <div>
                     <p className="font-semibold text-brand-dark group-hover:text-brand-cta text-sm">Call Us:</p>
