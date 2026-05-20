@@ -237,7 +237,7 @@ export default function HomePage() {
     <MainLayout>
       {/* ─── Hero ─── */}
       <section
-        className="relative min-h-[70vh] lg:min-h-[80vh] flex items-center bg-brand-primary overflow-hidden w-full"
+        className="relative min-h-[60vh] lg:min-h-[70vh] flex items-center bg-brand-primary overflow-hidden w-full"
         aria-label="Hero section"
       >
         {/* Background Slides */}
@@ -321,7 +321,7 @@ export default function HomePage() {
           <div className="text-center mt-12">
             <Link
               to="/shop"
-              className="inline-flex items-center gap-2 bg-brand-gold text-brand-dark border-2 border-brand-gold hover:bg-transparent hover:text-white hover:border-white transition-all duration-300 font-bold px-8 py-4 rounded-lg shadow-md"
+              className="inline-flex items-center gap-2 bg-brand-primary text-brand-light border-2 border-light hover:bg-white hover:text-brand-primary hover:border-white transition-all duration-300 font-bold px-8 py-4 rounded-lg shadow-md"
             >
               View All Sacraments
             </Link>
