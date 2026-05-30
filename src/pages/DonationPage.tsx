@@ -7,9 +7,10 @@ import { Link } from "react-router-dom";
 const PRESET_AMOUNTS = [10, 25, 50, 100, 250];
 
 export default function DonationPage() {
-  const { setDonation } = useCart();
+  const { setDonation, setDonationMessage } = useCart();
   const [amount, setAmount] = useState(10);
   const [custom, setCustom] = useState("");
+  const [message, setMessage] = useState("");
   const [added, setAdded] = useState(false);
 
   const finalAmount = custom ? Number(custom) : amount;
@@ -17,6 +18,7 @@ export default function DonationPage() {
   const handleAdd = () => {
     if (finalAmount > 0) {
       setDonation(finalAmount);
+      setDonationMessage(message);
       setAdded(true);
       setTimeout(() => setAdded(false), 2500);
     }
@@ -87,6 +89,20 @@ export default function DonationPage() {
                     value={custom}
                     onChange={(e) => setCustom(e.target.value)}
                     className="flex-1 border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta"
+                  />
+                </div>
+
+                {/* Message (Optional) */}
+                <div className="mb-6">
+                  <label className="text-sm font-semibold text-brand-dark block mb-2">
+                    Add a Message <span className="text-gray-400">(Optional)</span>
+                  </label>
+                  <textarea
+                    placeholder="Share your story or reason for donating..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={3}
+                    className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta resize-none"
                   />
                 </div>
 

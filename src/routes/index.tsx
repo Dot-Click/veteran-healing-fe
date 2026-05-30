@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
@@ -16,11 +17,16 @@ const StatementOfFaithPage = lazy(() => import("../pages/StatementOfFaithPage"))
 const AdminDashboardPage = lazy(() => import("../pages/AdminDashboardPage"));
 const AdminProductsPage = lazy(() => import("../pages/AdminProductsPage"));
 const AdminOrdersPage = lazy(() => import("../pages/AdminOrdersPage"));
-const AdminCouponsPage = lazy(() => import("../pages/AdminCouponsPage"));
 const AdminDonationsPage = lazy(() => import("../pages/AdminDonationsPage"));
 const AdminAffiliatesPage = lazy(() => import("../pages/AdminAffiliatesPage"));
+const AdminContactPage = lazy(() => import("../pages/AdminContactPage"));
 const AdminSettingsPage = lazy(() => import("../pages/AdminSettingsPage"));
+const AdminGuidePage = lazy(() => import("../pages/AdminGuidePage"));
+const AdminNotificationsPage = lazy(() => import("../pages/AdminNotificationsPage"));
+const NotificationPage = lazy(() => import("../pages/NotificationPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+const AuthPage = lazy(() => import("../pages/AuthPage"));
+const UserDashboardPage = lazy(() => import("../pages/UserDashboardPage"));
 
 function PageLoader() {
   return (
@@ -48,14 +54,102 @@ export default function AppRoutes() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/statement-of-faith" element={<StatementOfFaithPage />} />
 
+        {/* Dashboard pages */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <UserDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <NotificationPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Admin pages */}
-        <Route path="/admin" element={<AdminDashboardPage />} />
-        <Route path="/admin/products" element={<AdminProductsPage />} />
-        <Route path="/admin/orders" element={<AdminOrdersPage />} />
-        <Route path="/admin/coupons" element={<AdminCouponsPage />} />
-        <Route path="/admin/donations" element={<AdminDonationsPage />} />
-        <Route path="/admin/affiliates" element={<AdminAffiliatesPage />} />
-        <Route path="/admin/settings" element={<AdminSettingsPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminProductsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminOrdersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/donations"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminDonationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/affiliates"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminAffiliatesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/contact"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminContactPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminSettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/guides"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminGuidePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/notifications"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Auth */}
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/login" element={<Navigate to="/auth" replace />} />
+        <Route path="/signup" element={<Navigate to="/auth" replace />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />

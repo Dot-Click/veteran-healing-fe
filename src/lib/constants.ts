@@ -15,6 +15,8 @@ export const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Sacraments", href: "/shop" },
+  { label: "Donation", href: "/donation" },
+  { label: "Affiliate", href: "/affiliate" },
   { label: "Statement of Faith", href: "/statement-of-faith" },
   { label: "Contact Us", href: "/contact" },
 ] as const;
@@ -37,6 +39,10 @@ export const DEFAULT_AFFILIATE_COMMISSION = 0.10;
 export const SOCIAL_LINKS = {
   facebook: "https://www.facebook.com/VeteranHealing",
   instagram: "https://www.instagram.com/veteranhealing_",
+} as const;
+
+export const COMMUNITY_LINKS = {
+  facebookGroup: import.meta.env.VITE_FACEBOOK_GROUP_URL || "https://www.facebook.com/groups/3074328406129022/",
 } as const;
 
 export const CONTACT_INFO = {

@@ -1,16 +1,28 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import MainLayout from "../components/layout/MainLayout";
 import { ASSETS } from "../lib/assetPaths";
+import api from "../services/api";
 
-// PENDING: Client confirmation needed - guide format (PDF email, video course, etc.)
 export default function FreeGuidePage() {
   const [submitted, setSubmitted] = useState(false);
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // PENDING: Connect to email service (Brevo/SendGrid) in Phase 2
-    setSubmitted(true);
+    if (!email) return;
+
+    setIsLoading(true);
+    try {
+      await api.post("/email/send-guide", { email });
+      setSubmitted(true);
+      toast.success("Check your inbox for the free guide!");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to send guide. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -73,8 +85,12 @@ export default function FreeGuidePage() {
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full border border-brand-border/40 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-cta"
                   />
-                  <button type="submit" className="btn-primary w-full justify-center py-4 text-base">
-                    Send Me the Guide
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn-primary w-full justify-center py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? "Sending..." : "Send Me the Guide"}
                   </button>
                 </form>
               )}

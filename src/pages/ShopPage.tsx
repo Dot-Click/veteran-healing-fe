@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
-import { MOCK_PRODUCTS } from "../data/mockProducts";
+import { useProducts } from "../hooks/useProducts";
 import type { ProductCategory } from "../types/product.types";
 import { ASSETS } from "../lib/assetPaths";
 
@@ -19,6 +19,8 @@ export default function ShopPage() {
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">("all");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
+  const { data: products = [], isLoading, isError } = useProducts(activeCategory);
+
   const HERO_IMAGES = [ASSETS.SLIDER_1, ASSETS.SLIDER_2, ASSETS.SLIDER_3];
 
   useEffect(() => {
@@ -27,11 +29,6 @@ export default function ShopPage() {
     }, 5000);
     return () => clearInterval(timer);
   }, [HERO_IMAGES.length]);
-
-  const filtered =
-    activeCategory === "all"
-      ? MOCK_PRODUCTS
-      : MOCK_PRODUCTS.filter((p) => p.category === activeCategory);
 
   return (
     <MainLayout>
@@ -103,11 +100,19 @@ export default function ShopPage() {
           </div>
 
           {/* Product grid */}
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl h-72 animate-pulse border border-brand-border/10" />
+              ))}
+            </div>
+          ) : isError ? (
+            <p className="text-red-500 text-center py-16">Failed to load products. Please try again.</p>
+          ) : products.length === 0 ? (
             <p className="text-gray-500 text-center py-16">No products in this category yet.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {filtered.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

@@ -1,9 +1,11 @@
-import { createContext, useCallback, useMemo, useReducer, type ReactNode } from "react";
+import { createContext, useCallback, useEffect, useMemo, useReducer, type ReactNode } from "react";
 import type { CartItem, Product, ProductVariant } from "../types/product.types";
+import api from "../services/api";
 
 interface CartState {
   items: CartItem[];
   donationAmount: number;
+  donationMessage: string;
   couponCode: string;
   couponDiscount: number;
 }
@@ -13,6 +15,7 @@ type CartAction =
   | { type: "REMOVE_ITEM"; productId: string; variantId?: string }
   | { type: "UPDATE_QUANTITY"; productId: string; variantId: string | undefined; quantity: number }
   | { type: "SET_DONATION"; amount: number }
+  | { type: "SET_DONATION_MESSAGE"; message: string }
   | { type: "APPLY_COUPON"; code: string; discount: number }
   | { type: "REMOVE_COUPON" }
   | { type: "CLEAR_CART" };
@@ -22,6 +25,7 @@ interface CartContextValue extends CartState {
   removeItem: (productId: string, variantId?: string) => void;
   updateQuantity: (productId: string, variantId: string | undefined, quantity: number) => void;
   setDonation: (amount: number) => void;
+  setDonationMessage: (message: string) => void;
   applyCoupon: (code: string, discount: number) => void;
   removeCoupon: () => void;
   clearCart: () => void;
@@ -83,12 +87,14 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       };
     case "SET_DONATION":
       return { ...state, donationAmount: action.amount };
+    case "SET_DONATION_MESSAGE":
+      return { ...state, donationMessage: action.message };
     case "APPLY_COUPON":
       return { ...state, couponCode: action.code, couponDiscount: action.discount };
     case "REMOVE_COUPON":
       return { ...state, couponCode: "", couponDiscount: 0 };
     case "CLEAR_CART":
-      return { items: [], donationAmount: 0, couponCode: "", couponDiscount: 0 };
+      return { items: [], donationAmount: 0, donationMessage: "", couponCode: "", couponDiscount: 0 };
     default:
       return state;
   }
@@ -97,12 +103,39 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 const INITIAL_STATE: CartState = {
   items: [],
   donationAmount: 0,
+  donationMessage: "",
   couponCode: "",
   couponDiscount: 0,
 };
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, INITIAL_STATE);
+
+  // Persist cart to backend after state changes
+  useEffect(() => {
+    const persistCart = async () => {
+      try {
+        // Transform items to backend format (just slug, variantId, quantity)
+        const backendItems = state.items.map((item) => ({
+          productSlug: item.product.slug,
+          variantId: item.selectedVariant?.id,
+          quantity: item.quantity,
+          priceAtAdd: Math.round(item.product.price * 100), // Convert to cents
+        }));
+
+        await api.put("/cart", {
+          items: backendItems,
+          donationAmount: Math.round(state.donationAmount * 100), // Convert to cents
+          donationMessage: state.donationMessage,
+        });
+      } catch (err) {
+        // Silently fail - local state is still valid
+        console.debug("Cart sync failed:", err);
+      }
+    };
+
+    persistCart();
+  }, [state.items, state.donationAmount, state.donationMessage]);
 
   const addItem = useCallback((product: Product, variant?: ProductVariant) => {
     dispatch({ type: "ADD_ITEM", product, variant });
@@ -121,6 +154,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const setDonation = useCallback((amount: number) => {
     dispatch({ type: "SET_DONATION", amount });
+  }, []);
+
+  const setDonationMessage = useCallback((message: string) => {
+    dispatch({ type: "SET_DONATION_MESSAGE", message });
   }, []);
 
   const applyCoupon = useCallback((code: string, discount: number) => {
@@ -157,6 +194,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       updateQuantity,
       setDonation,
+      setDonationMessage,
       applyCoupon,
       removeCoupon,
       clearCart,
@@ -164,7 +202,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       total,
       totalItems,
     }),
-    [state, addItem, removeItem, updateQuantity, setDonation, applyCoupon, removeCoupon, clearCart, subtotal, total, totalItems]
+    [state, addItem, removeItem, updateQuantity, setDonation, setDonationMessage, applyCoupon, removeCoupon, clearCart, subtotal, total, totalItems]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

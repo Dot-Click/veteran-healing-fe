@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import MainLayout from "../components/layout/MainLayout";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import {
   BriefcaseBusiness,
   ChartNoAxesCombined,
@@ -16,6 +19,7 @@ import {
   Users,
 } from "lucide-react";
 import { ASSETS } from "../lib/assetPaths";
+import { COMMUNITY_LINKS } from "../lib/constants";
 
 const STEPS = [
   {
@@ -105,9 +109,34 @@ const BENEFIT_CARDS = [
 ];
 
 export default function AffiliatePage() {
-  const [, setShowLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleApply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) {
+      toast.error("You must be logged in to apply for the affiliate program.");
+      navigate("/auth");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await api.post("/affiliates/apply", {
+        email: user.email,
+        name: user.name,
+        message
+      });
+      toast.success("Thank you for applying! We'll review your application shortly.");
+      setMessage("");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || "Failed to submit application.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <MainLayout>
@@ -139,7 +168,7 @@ export default function AffiliatePage() {
                 Be sure to also check out our Facebook group for community support!
               </p>
               <a
-                href="https://www.facebook.com/VeteranHealing"
+                href={COMMUNITY_LINKS.facebookGroup}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary text-sm hover:bg-white hover:text-brand-cta transition"
@@ -148,46 +177,65 @@ export default function AffiliatePage() {
               </a>
             </div>
 
-            {/* Login form */}
+            {/* Affiliate signup form */}
             <div className="w-full max-w-sm bg-white rounded-xl shadow-xl p-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta"
-                  />
+              <h3 className="text-lg font-bold text-brand-dark mb-4">Apply Now</h3>
+              {!user ? (
+                <div className="space-y-4">
+                  <p className="text-gray-600 text-sm">
+                    You must be logged in to apply for the affiliate program.
+                  </p>
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="btn-primary w-full justify-center py-3 hover:bg-white hover:text-brand-cta hover:border hover:border-green-700 transition-all"
+                  >
+                    Sign In / Create Account
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" id="remember" className="accent-brand-cta" />
-                  <label htmlFor="remember" className="text-xs text-gray-600">
-                    Remember Me
-                  </label>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowLogin(false)}
-                  className="btn-primary w-full justify-center py-3 hover:bg-white hover:text-brand-cta hover:border hover:border-green-700 transition-all"
-                >
-                  Log In
-                </button>
-                <a href="#" className="block text-center text-xs text-brand-cta hover:underline">
-                  Lost your password?
-                </a>
-              </div>
+              ) : (
+                <form onSubmit={handleApply} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={user.name || ""}
+                      disabled
+                      className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={user.email || ""}
+                      disabled
+                      className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Message (Optional)
+                    </label>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Tell us why you want to join..."
+                      className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta min-h-20"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn-primary w-full justify-center py-3 hover:bg-white hover:text-brand-cta hover:border hover:border-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? "Submitting..." : "Submit Application"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>

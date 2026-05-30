@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { ShoppingCart, Shield, Leaf, Truck, Star, Send } from "lucide-react";
+import toast from "react-hot-toast";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
-import { getProductBySlug, MOCK_PRODUCTS } from "../data/mockProducts";
-import { MOCK_REVIEWS } from "../data/mockReviews";
+import { useProduct, useProducts } from "../hooks/useProducts";
 import { useCart } from "../hooks/useCart";
 import { formatPriceDollars } from "../lib/utils";
 import type { ProductVariant } from "../types/product.types";
 import { ASSETS } from "../lib/assetPaths";
+import api from "../services/api";
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const product = getProductBySlug(slug ?? "");
+  const { data: product, isLoading, isError } = useProduct(slug ?? "");
+  const { data: allProducts = [] } = useProducts();
   const { addItem } = useCart();
 
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
-    product?.variants[0]
-  );
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(undefined);
   const [added, setAdded] = useState(false);
 
   // Gallery image state
@@ -30,7 +30,7 @@ export default function ProductDetailPage() {
   // Quantity selection
   const [quantity, setQuantity] = useState(1);
 
-  // Reviews state
+  // Reviews state (from API + locally added)
   const [reviews, setReviews] = useState<any[]>([]);
 
   // New review form state
@@ -40,25 +40,39 @@ export default function ProductDetailPage() {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [activeTab, setActiveTab] = useState<"related" | "reviews">("related");
 
-  // Sync reviews when product changes
+  // Sync state when product loads
   useEffect(() => {
     if (product) {
-      const matched = MOCK_REVIEWS.filter(
-        (r) => r.productName.toLowerCase() === product.name.toLowerCase()
-      );
-      if (matched.length > 0) {
-        setReviews(matched);
-      } else {
-        // Fallback reviews to make page look populated
-        setReviews(MOCK_REVIEWS.slice(0, 3));
-      }
-      // Reset gallery index
       setActiveImageIdx(0);
       setSelectedVariant(product.variants[0]);
     }
   }, [product]);
 
-  if (!product) return <Navigate to="/shop" replace />;
+  // Fetch reviews for the product
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!product?.id) return;
+      try {
+        const response = await api.get(`/reviews/product/${product.id}`);
+        setReviews(response.data || []);
+      } catch (error) {
+        console.error('Failed to fetch reviews:', error);
+      }
+    };
+    fetchReviews();
+  }, [product?.id]);
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border-4 border-brand-primary border-t-transparent animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (isError || !product) return <Navigate to="/shop" replace />;
 
   // Gallery images list (forces exactly 3 images using fallback product placeholders)
   const allImages = [
@@ -76,29 +90,38 @@ export default function ProductDetailPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAuthor || !newBody) return;
 
-    const newReviewItem = {
-      id: `r-new-${Date.now()}`,
-      author: newAuthor,
-      rating: newRating,
-      body: newBody,
-      productName: product.name,
-      date: new Date().toISOString().split("T")[0],
-    };
+    try {
+      const newReview = await api.post('/reviews', {
+        productId: product.id,
+        authorName: newAuthor,
+        rating: newRating,
+        body: newBody,
+      });
 
-    setReviews([newReviewItem, ...reviews]);
-    setNewAuthor("");
-    setNewRating(5);
-    setNewBody("");
-    setReviewSubmitted(true);
-    setTimeout(() => setReviewSubmitted(false), 3000);
+      // Add new review to the list immediately
+      setReviews([newReview.data, ...reviews]);
+
+      setNewAuthor("");
+      setNewRating(5);
+      setNewBody("");
+      setReviewSubmitted(true);
+      setTimeout(() => setReviewSubmitted(false), 3000);
+
+      toast.success('Review submitted! It will appear after admin approval.');
+    } catch (error) {
+      toast.error('Failed to submit review. Please try again.');
+      console.error('Review submission error:', error);
+    }
   };
 
-  // Get max 6 related products, excluding the current product
-  const relatedProducts = MOCK_PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
+  // Get max 4 related products from same category, excluding the current product
+  const relatedProducts = allProducts
+    .filter((p) => p.id !== product.id && p.category === product.category)
+    .slice(0, 4);
 
   // Apparel color swatches
   const apparelColors = [

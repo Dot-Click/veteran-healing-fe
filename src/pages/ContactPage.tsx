@@ -1,18 +1,44 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import MainLayout from "../components/layout/MainLayout";
 import { Mail, MessageCircle, PhoneCallIcon } from "lucide-react";
 import { FacebookIcon } from "../components/common/SocialIcons";
 import { CONTACT_INFO, SOCIAL_LINKS } from "../lib/constants";
 import { ASSETS } from "../lib/assetPaths";
+import api from "../services/api";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", order: "", email: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // PENDING: Connect to backend contact form handler in Phase 2
-    setSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      // Map form fields to backend DTO: use order as part of subject if provided
+      const subject = form.order ? `Inquiry - Order #${form.order}` : "General Inquiry";
+
+      await api.post("/contact", {
+        name: form.name,
+        email: form.email,
+        subject,
+        message: form.message,
+      });
+
+      setSubmitted(true);
+      setForm({ name: "", phone: "", order: "", email: "", message: "" });
+      toast.success("Message sent! We'll get back to you shortly.");
+
+      // Reset form after 3 seconds
+      setTimeout(() => setSubmitted(false), 3000);
+    } catch (error) {
+      toast.error("Failed to send message. Please try again.");
+      console.error("Contact form error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -146,8 +172,12 @@ export default function ContactPage() {
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     className="w-full border border-brand-border/40 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-cta resize-none"
                   />
-                  <button type="submit" className="btn-primary w-full justify-center py-4 text-base">
-                    Submit
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn-primary w-full justify-center py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? "Sending..." : "Submit"}
                   </button>
                 </form>
               )}

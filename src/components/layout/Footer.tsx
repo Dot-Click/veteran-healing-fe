@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FacebookIcon, InstagramIcon } from "../common/SocialIcons";
-import { SOCIAL_LINKS, CONTACT_INFO } from "../../lib/constants";
+import { SOCIAL_LINKS, CONTACT_INFO, COMMUNITY_LINKS } from "../../lib/constants";
 import LegalDisclaimerFooter from "./LegalDisclaimerFooter";
 
 const FOOTER_LINKS = {
@@ -23,6 +23,7 @@ const FOOTER_LINKS = {
     { label: "Donation", href: "/donation" },
     { label: "Affiliate Program", href: "/affiliate" },
     { label: "Free Microdose Guide", href: "/free-guide" },
+    { label: "Join Private Group", href: COMMUNITY_LINKS.facebookGroup, external: true },
   ],
 };
 
@@ -123,12 +124,23 @@ export default function Footer() {
               <ul className="space-y-2">
                 {FOOTER_LINKS.support.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-400 hover:text-white transition-colors text-sm"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-white transition-colors text-sm"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-gray-400 hover:text-white transition-colors text-sm"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

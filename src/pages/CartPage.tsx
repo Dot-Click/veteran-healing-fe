@@ -130,16 +130,6 @@ export default function CartPage() {
                   )}
                 </tbody>
               </table>
-
-              {/* Coupon */}
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 max-w-sm">
-                <input
-                  type="text"
-                  placeholder="Coupon code"
-                  className="flex-1 border border-brand-border/40 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-brand-cta"
-                />
-                <button className="btn-primary py-2 px-5 text-sm">Apply coupon</button>
-              </div>
             </div>
 
             {/* Cart totals */}

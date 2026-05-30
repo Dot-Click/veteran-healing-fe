@@ -34,7 +34,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-brand-accent">
-          <span className="text-white font-bold text-lg">Menu</span>
+          <Link to="/" onClick={onClose} className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm overflow-hidden">
+              <img src="/logo.webp" alt="Veteran Healing" className="w-8 h-8 object-contain" />
+            </div>
+            <span className="text-white font-semibold text-sm tracking-wide">
+              Veteran Healing
+            </span>
+          </Link>
           <button
             onClick={onClose}
             className="text-white hover:text-brand-gold transition-colors p-1"
@@ -66,13 +73,6 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </ul>
 
           <div className="px-6 pt-6 flex flex-col gap-3">
-            <Link
-              to="/free-guide"
-              onClick={onClose}
-              className="btn-primary text-center justify-center text-sm"
-            >
-              Free Microdose Guide
-            </Link>
             <Link
               to="/shop"
               onClick={onClose}

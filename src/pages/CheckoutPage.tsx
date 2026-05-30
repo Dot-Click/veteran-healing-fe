@@ -103,7 +103,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-brand-dark mb-1">Email Address <span className="text-red-500">*</span></label>
-                    <input type="email" placeholder="Email Address" required className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta" />
+                    <input type="email" placeholder="Email Address" autoComplete="email" required className="w-full border border-brand-border/40 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand-cta" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-brand-dark mb-1">Order notes (optional)</label>
