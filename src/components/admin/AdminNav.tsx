@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNotifications } from "../../hooks/useNotifications";
 
 export const ADMIN_NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
@@ -31,6 +32,9 @@ export default function AdminNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { signout } = useAuth();
+  const { data: notifications = [] } = useNotifications();
+
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   const handleSignout = async () => {
     const result = await signout();
@@ -62,14 +66,21 @@ export default function AdminNav() {
               <Link
                 to={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   location.pathname === item.href
                     ? "bg-brand-accent text-white"
                     : "text-gray-300 hover:bg-brand-accent/40 hover:text-white"
                 )}
               >
-                <item.icon size={16} />
-                {item.label}
+                <div className="flex items-center gap-3">
+                  <item.icon size={16} />
+                  {item.label}
+                </div>
+                {item.label === "Notifications" && unreadCount > 0 && (
+                  <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-red-500 text-white rounded-full">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Link>
             </li>
           ))}

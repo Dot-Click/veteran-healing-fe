@@ -17,7 +17,7 @@ export default function AuthPage() {
       </div>
 
       {/* Right: Auth form */}
-      <div className="flex-1 flex flex-col h-full overflow-y-auto no-scrollbar">
+      <div className="flex-1 flex flex-col h-full overflow-y-auto no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {/* Top nav bar */}
         <div
           className="flex items-center justify-between px-6 py-4 border-b"

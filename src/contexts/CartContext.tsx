@@ -1,6 +1,7 @@
-import { createContext, useCallback, useEffect, useMemo, useReducer, type ReactNode } from "react";
+import { createContext, useCallback, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 import type { CartItem, Product, ProductVariant } from "../types/product.types";
 import api from "../services/api";
+import { useAuth } from "./AuthContext";
 
 interface CartState {
   items: CartItem[];
@@ -108,15 +109,87 @@ const INITIAL_STATE: CartState = {
   couponDiscount: 0,
 };
 
+const STORAGE_KEY = "veteran-healing-cart";
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, INITIAL_STATE);
+  const { user, isAuthenticated } = useAuth();
+  const backendSyncRef = useRef(false);
+
+  const [state, dispatch] = useReducer(cartReducer, INITIAL_STATE, (initial) => {
+    // Initialize from localStorage if available
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Validate the structure
+        if (parsed.items && Array.isArray(parsed.items)) {
+          return {
+            items: parsed.items || [],
+            donationAmount: parsed.donationAmount || 0,
+            donationMessage: parsed.donationMessage || "",
+            couponCode: parsed.couponCode || "",
+            couponDiscount: parsed.couponDiscount || 0,
+          };
+        }
+      }
+    } catch (err) {
+      console.debug("Failed to load cart from localStorage:", err);
+    }
+    return initial;
+  });
+
+  // Load cart from backend when user authenticates
+  useEffect(() => {
+    if (isAuthenticated && user?.id && !backendSyncRef.current) {
+      backendSyncRef.current = true;
+      const loadCartFromBackend = async () => {
+        try {
+          const response = await api.get("/cart");
+          const backendCart = response.data;
+
+          if (backendCart.items?.length > 0 || backendCart.donationAmount > 0) {
+            // Restore full Product objects from backend items
+            const restoredItems = (backendCart.items || []).map((item: any) => ({
+              product: item.product || { id: "", slug: "", name: "", price: 0, images: [], category: "", inStock: false },
+              quantity: item.quantity || 1,
+              selectedVariant: item.selectedVariant,
+            }));
+
+            dispatch({ type: "CLEAR_CART" });
+            restoredItems.forEach((item: CartItem) => {
+              dispatch({ type: "ADD_ITEM", product: item.product, variant: item.selectedVariant });
+            });
+            if (backendCart.donationAmount) {
+              dispatch({ type: "SET_DONATION", amount: backendCart.donationAmount });
+            }
+            if (backendCart.donationMessage) {
+              dispatch({ type: "SET_DONATION_MESSAGE", message: backendCart.donationMessage });
+            }
+          }
+        } catch (err) {
+          console.debug("Failed to load cart from backend:", err);
+        }
+      };
+
+      loadCartFromBackend();
+    }
+  }, [isAuthenticated, user?.id]);
+
+  // Persist cart to localStorage after state changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+      console.debug("Failed to save cart to localStorage:", err);
+    }
+  }, [state]);
 
   // Persist cart to backend after state changes
   useEffect(() => {
     const persistCart = async () => {
       try {
         // Transform items to backend format (just slug, variantId, quantity)
-        const backendItems = state.items.map((item) => ({
+        const backendItems = state.items.map((item: CartItem) => ({
           productSlug: item.product.slug,
           variantId: item.selectedVariant?.id,
           quantity: item.quantity,
@@ -173,7 +246,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const subtotal = useMemo(
-    () => state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+    () => state.items.reduce((sum: number, item: CartItem) => sum + item.product.price * item.quantity, 0),
     [state.items]
   );
 
@@ -183,8 +256,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const totalItems = useMemo(
-    () => state.items.reduce((sum, item) => sum + item.quantity, 0),
-    [state.items]
+    () => {
+      const itemsCount = state.items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
+      // Include donation as 1 item if present
+      const donationCount = state.donationAmount > 0 ? 1 : 0;
+      return itemsCount + donationCount;
+    },
+    [state.items, state.donationAmount]
   );
 
   const value = useMemo<CartContextValue>(

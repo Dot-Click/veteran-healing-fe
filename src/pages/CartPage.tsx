@@ -8,12 +8,12 @@ import { useState } from "react";
 import { ASSETS } from "../lib/assetPaths";
 
 export default function CartPage() {
-  const { items, subtotal, total, donationAmount, couponDiscount, updateQuantity, removeItem, setDonation } = useCart();
+  const { items, subtotal, total, donationAmount, donationMessage, couponDiscount, updateQuantity, removeItem, setDonation } = useCart();
   const [donationInput, setDonationInput] = useState(donationAmount > 0 ? String(donationAmount) : "10");
 
   const shippingFree = subtotal >= FREE_SHIPPING_THRESHOLD;
 
-  if (items.length === 0) {
+  if (items.length === 0 && donationAmount === 0) {
     return (
       <MainLayout>
         <section className="min-h-[60vh] flex items-center justify-center bg-brand-cream-light">
@@ -111,22 +111,29 @@ export default function CartPage() {
                     </tr>
                   ))}
                   {donationAmount > 0 && (
-                    <tr className="py-4">
-                      <td className="py-4">
-                        <div className="flex items-center gap-4">
-                          <button onClick={() => setDonation(0)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
-                            <X size={16} />
-                          </button>
-                          <div className="w-14 h-14 rounded-lg bg-brand-gold/20 flex items-center justify-center flex-shrink-0">
-                            <span className="text-brand-gold text-xl">$</span>
+                    <>
+                      <tr className="py-4">
+                        <td className="py-4">
+                          <div className="flex items-center gap-4">
+                            <button onClick={() => setDonation(0)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
+                              <X size={16} />
+                            </button>
+                            <div className="w-14 h-14 rounded-lg bg-brand-gold/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-brand-gold text-xl">$</span>
+                            </div>
+                            <div>
+                              <span className="text-sm font-medium text-brand-dark block">Donation</span>
+                              {donationMessage && (
+                                <p className="text-xs text-gray-500 mt-1">{donationMessage}</p>
+                              )}
+                            </div>
                           </div>
-                          <span className="text-sm font-medium text-brand-dark">Donation</span>
-                        </div>
-                      </td>
-                      <td className="text-center text-sm">{formatPriceDollars(donationAmount)} $</td>
-                      <td />
-                      <td className="text-right text-sm font-semibold">{formatPriceDollars(donationAmount)} $</td>
-                    </tr>
+                        </td>
+                        <td className="text-center text-sm">{formatPriceDollars(donationAmount)} $</td>
+                        <td />
+                        <td className="text-right text-sm font-semibold">{formatPriceDollars(donationAmount)} $</td>
+                      </tr>
+                    </>
                   )}
                 </tbody>
               </table>
