@@ -1,11 +1,15 @@
+
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { Shield, Leaf, Users, Star, ChevronRight, ChevronLeft, Handshake, ChevronDown } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "../components/common/SocialIcons";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
 import { FEATURED_PRODUCTS } from "../data/mockProducts";
 import { ASSETS } from "../lib/assetPaths";
+import api from "../services/api";
 
 const IMPACT_STATS = [
   { value: "22", label: "Veterans lost daily to suicide" },
@@ -193,6 +197,25 @@ export default function HomePage() {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [guideEmail, setGuideEmail] = useState("");
+  const [guideSubmitted, setGuideSubmitted] = useState(false);
+  const [guideLoading, setGuideLoading] = useState(false);
+
+  const handleGuideSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guideEmail) return;
+
+    setGuideLoading(true);
+    try {
+      await api.post("/email/send-guide", { email: guideEmail });
+      setGuideSubmitted(true);
+      toast.success("Check your inbox for the free guide!");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to send guide. Please try again.");
+    } finally {
+      setGuideLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -315,9 +338,16 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURED_PRODUCTS.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div
+                key={product.id}
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="cursor-pointer"
+              >
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
+
           <div className="text-center mt-12">
             <Link
               to="/shop"
@@ -366,20 +396,51 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <form onSubmit={(e) => e.preventDefault()} className="max-w-md space-y-3">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-5 py-4 border border-brand-border/50 rounded-lg text-brand-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-cta focus:border-transparent bg-white shadow-inner"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="w-full btn-primary bg-brand-cta hover:bg-brand-primary text-white font-semibold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 justify-center"
-                >
-                  GET MY FREE COPY NOW
-                </button>
-              </form>
+              {guideSubmitted && (
+                <>
+                  {/*
+                    This effect will set guideSubmitted back to false after 5 seconds,
+                    thus hiding the message automatically.
+                  */}
+                  {(() => {
+                    // useEffect isn't available here, so use a side-effecty IIFE.
+                    setTimeout(() => {
+                      // Only reset if still seeing thanks message
+                      if (guideSubmitted) {
+                        setGuideSubmitted(false);
+                      }
+                    }, 5000);
+                    return null;
+                  })()}
+                </>
+              )}
+
+              {guideSubmitted ? (
+                <div className="max-w-md bg-brand-cta/10 border border-brand-cta/30 rounded-xl p-6 text-center">
+                  <h3 className="font-bold text-brand-dark text-lg mb-2">You're on the list!</h3>
+                  <p className="text-gray-600 text-sm">
+                    Check your inbox at <strong>{guideEmail}</strong> — your free guide is on the way.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleGuideSubmit} className="max-w-md space-y-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={guideEmail}
+                    onChange={(e) => setGuideEmail(e.target.value)}
+                    className="w-full px-5 py-4 border border-brand-border/50 rounded-lg text-brand-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-cta focus:border-transparent bg-white shadow-inner"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={guideLoading}
+                    className="w-full btn-primary bg-brand-cta hover:bg-brand-primary text-white font-semibold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                  >
+                    {guideLoading ? "Sending..." : "GET MY FREE COPY NOW"}
+                  </button>
+                </form>
+              )}
               <p className="text-gray-400 text-xs mt-3">100% free. No spam. Just genuine support.</p>
             </div>
           </div>
