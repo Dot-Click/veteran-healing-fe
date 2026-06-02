@@ -1,12 +1,30 @@
+import { useMemo, useState } from "react";
 import AdminLayout from "../components/layout/AdminLayout";
 import { useAffiliates, useUpdateAffiliateStatus, useDeleteAffiliate } from "../hooks/useAffiliates";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
+import { matchesSearch } from "../lib/search";
 
 export default function AdminAffiliatesPage() {
   const { data: affiliates = [], isLoading } = useAffiliates();
   const updateStatus = useUpdateAffiliateStatus();
   const deleteAffiliate = useDeleteAffiliate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredAffiliates = useMemo(
+    () =>
+      affiliates.filter((a) =>
+        matchesSearch(
+          searchQuery,
+          a.user?.name,
+          a.user?.email,
+          a.referralCode,
+          a.status,
+          String(Number(a.commissionRate) * 100)
+        )
+      ),
+    [affiliates, searchQuery]
+  );
 
   async function handleStatus(id: string, status: "approved" | "rejected" | "suspended") {
     try {
@@ -32,10 +50,19 @@ export default function AdminAffiliatesPage() {
   const pendingCount = affiliates.filter((a) => a.status === "pending").length;
 
   return (
-    <AdminLayout title="Affiliates">
+    <AdminLayout
+      title="Affiliates"
+      search={{
+        value: searchQuery,
+        onChange: setSearchQuery,
+        placeholder: "Search by name, email, referral code, or status...",
+      }}
+    >
       <div className="flex justify-between items-center mb-6">
         <p className="text-sm text-gray-500">
-          {affiliates.length} affiliates
+          {searchQuery.trim()
+            ? `${filteredAffiliates.length} of ${affiliates.length} affiliates`
+            : `${affiliates.length} affiliates`}
           {pendingCount > 0 && (
             <span className="ml-2 inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">
               {pendingCount} pending review
@@ -66,14 +93,14 @@ export default function AdminAffiliatesPage() {
                   </td>
                 </tr>
               ))
-            ) : affiliates.length === 0 ? (
+            ) : filteredAffiliates.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-5 py-8 text-center text-gray-400">
-                  No affiliates yet.
+                  {searchQuery.trim() ? "No affiliates match your search." : "No affiliates yet."}
                 </td>
               </tr>
             ) : (
-              affiliates.map((a) => (
+              filteredAffiliates.map((a) => (
                 <tr key={a.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3">
                     <div className="font-medium text-brand-dark">{a.user?.name ?? "—"}</div>

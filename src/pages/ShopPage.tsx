@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
+import SearchInput from "../components/common/SearchInput";
 import { useProducts } from "../hooks/useProducts";
 import type { ProductCategory } from "../types/product.types";
 import { ASSETS } from "../lib/assetPaths";
+import { matchesSearch } from "../lib/search";
 
 const CATEGORIES: { label: string; value: ProductCategory | "all" }[] = [
   { label: "All", value: "all" },
@@ -17,9 +19,25 @@ const CATEGORIES: { label: string; value: ProductCategory | "all" }[] = [
 
 export default function ShopPage() {
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const { data: products = [], isLoading, isError } = useProducts(activeCategory);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) =>
+      matchesSearch(
+        searchQuery,
+        product.name,
+        product.shortDescription,
+        product.description,
+        product.category,
+        product.slug,
+        ...product.tags,
+        ...product.badges
+      )
+    );
+  }, [products, searchQuery]);
 
   const HERO_IMAGES = [ASSETS.SLIDER_1, ASSETS.SLIDER_2, ASSETS.SLIDER_3];
 
@@ -99,6 +117,15 @@ export default function ShopPage() {
             ))}
           </div>
 
+          <div className="mb-8 max-w-xl">
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search sacraments by name, category, or description..."
+              aria-label="Search sacraments"
+            />
+          </div>
+
           {/* Product grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -108,11 +135,15 @@ export default function ShopPage() {
             </div>
           ) : isError ? (
             <p className="text-red-500 text-center py-16">Failed to load products. Please try again.</p>
-          ) : products.length === 0 ? (
-            <p className="text-gray-500 text-center py-16">No products in this category yet.</p>
+          ) : filteredProducts.length === 0 ? (
+            <p className="text-gray-500 text-center py-16">
+              {searchQuery.trim()
+                ? `No sacraments match "${searchQuery.trim()}". Try another search or category.`
+                : "No products in this category yet."}
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

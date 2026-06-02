@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import AdminLayout from "../components/layout/AdminLayout";
 import { useProducts, useCreateProduct, useDeleteProduct, useUpdateProduct } from "../hooks/useProducts";
 import { uploadService } from "../services/uploadService";
@@ -6,6 +6,7 @@ import { formatPriceDollars } from "../lib/utils";
 import { Plus, Pencil, Trash2, Upload, X, Check, ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import type { Product } from "../types/product.types";
+import { matchesSearch } from "../lib/search";
 
 const CATEGORIES = [
   { label: "Capsules", value: "capsules" },
@@ -56,7 +57,25 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredProducts = useMemo(
+    () =>
+      products.filter((p) =>
+        matchesSearch(
+          searchQuery,
+          p.name,
+          p.slug,
+          p.category,
+          p.shortDescription,
+          p.description,
+          ...p.badges,
+          ...p.tags
+        )
+      ),
+    [products, searchQuery]
+  );
 
   function openCreate() {
     setForm(emptyForm);
@@ -157,9 +176,20 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <AdminLayout title="Products">
+    <AdminLayout
+      title="Products"
+      search={{
+        value: searchQuery,
+        onChange: setSearchQuery,
+        placeholder: "Search by name, slug, category, or description...",
+      }}
+    >
       <div className="flex justify-between items-center mb-6">
-        <p className="text-sm text-gray-500">{products.length} products</p>
+        <p className="text-sm text-gray-500">
+          {searchQuery.trim()
+            ? `${filteredProducts.length} of ${products.length} products`
+            : `${products.length} products`}
+        </p>
         <button onClick={openCreate} className="btn-primary text-sm py-2 px-4">
           <Plus size={14} /> Add Product
         </button>
@@ -402,14 +432,14 @@ export default function AdminProductsPage() {
                   </td>
                 </tr>
               ))
-            ) : products.length === 0 ? (
+            ) : filteredProducts.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-5 py-8 text-center text-gray-400">
-                  No products yet. Add your first product above.
+                  {searchQuery.trim() ? "No products match your search." : "No products yet. Add your first product above."}
                 </td>
               </tr>
             ) : (
-              products.map((p) => (
+              filteredProducts.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">

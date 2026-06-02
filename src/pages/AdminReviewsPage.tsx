@@ -9,11 +9,13 @@ import {
   useDeleteReview,
 } from "../hooks/useReviews";
 import type { ApiReview } from "../types/review.types";
+import { matchesSearch } from "../lib/search";
 
 type ReviewFilter = "all" | "pending" | "approved";
 
 export default function AdminReviewsPage() {
   const [filter, setFilter] = useState<ReviewFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
     useAdminReviewsInfinite();
   const approveReview = useApproveReview();
@@ -25,10 +27,23 @@ export default function AdminReviewsPage() {
   );
 
   const filtered = useMemo(() => {
-    if (filter === "pending") return allReviews.filter((r) => !r.isApproved);
-    if (filter === "approved") return allReviews.filter((r) => r.isApproved);
-    return allReviews;
-  }, [allReviews, filter]);
+    let list = allReviews;
+    if (filter === "pending") list = list.filter((r) => !r.isApproved);
+    if (filter === "approved") list = list.filter((r) => r.isApproved);
+
+    if (!searchQuery.trim()) return list;
+
+    return list.filter((r) =>
+      matchesSearch(
+        searchQuery,
+        r.authorName,
+        r.body,
+        r.product?.name,
+        r.rating,
+        r.isApproved ? "approved" : "pending"
+      )
+    );
+  }, [allReviews, filter, searchQuery]);
 
   const pendingCount = allReviews.filter((r) => !r.isApproved).length;
 
@@ -58,10 +73,19 @@ export default function AdminReviewsPage() {
   };
 
   return (
-    <AdminLayout title="Reviews">
+    <AdminLayout
+      title="Reviews"
+      search={{
+        value: searchQuery,
+        onChange: setSearchQuery,
+        placeholder: "Search by author, review text, or product...",
+      }}
+    >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <p className="text-sm text-gray-500">
-          {data?.pages[0]?.total ?? 0} total reviews
+          {searchQuery.trim()
+            ? `${filtered.length} shown`
+            : `${data?.pages[0]?.total ?? 0} total reviews`}
           {pendingCount > 0 && (
             <span className="ml-2 inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">
               {pendingCount} pending
@@ -117,7 +141,7 @@ export default function AdminReviewsPage() {
             ) : filtered.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-5 py-8 text-center text-gray-400">
-                  No reviews found.
+                  {searchQuery.trim() ? "No reviews match your search." : "No reviews found."}
                 </td>
               </tr>
             ) : (

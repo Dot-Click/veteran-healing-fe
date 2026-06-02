@@ -1,7 +1,9 @@
+import { useMemo, useState } from "react";
 import AdminLayout from "../components/layout/AdminLayout";
 import { useOrders, useUpdateOrderStatus } from "../hooks/useOrders";
 import type { BackendOrder } from "../services/orderService";
 import toast from "react-hot-toast";
+import { matchesSearch } from "../lib/search";
 
 const STATUS_OPTIONS: BackendOrder["status"][] = [
   "pending",
@@ -15,6 +17,23 @@ const STATUS_OPTIONS: BackendOrder["status"][] = [
 export default function AdminOrdersPage() {
   const { data: orders = [], isLoading } = useOrders();
   const updateStatus = useUpdateOrderStatus();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredOrders = useMemo(
+    () =>
+      orders.filter((order) =>
+        matchesSearch(
+          searchQuery,
+          order.orderNumber,
+          order.guestEmail,
+          order.status,
+          order.paymentMethod,
+          order.paymentReference,
+          order.couponCode
+        )
+      ),
+    [orders, searchQuery]
+  );
 
   async function handleStatusChange(id: string, status: BackendOrder["status"]) {
     try {
@@ -26,9 +45,20 @@ export default function AdminOrdersPage() {
   }
  
   return (
-    <AdminLayout title="Orders">
+    <AdminLayout
+      title="Orders"
+      search={{
+        value: searchQuery,
+        onChange: setSearchQuery,
+        placeholder: "Search by order #, email, status, or payment...",
+      }}
+    >
       <div className="flex justify-between items-center mb-6">
-        <p className="text-sm text-gray-500">{orders.length} orders</p>
+        <p className="text-sm text-gray-500">
+          {searchQuery.trim()
+            ? `${filteredOrders.length} of ${orders.length} orders`
+            : `${orders.length} orders`}
+        </p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden overflow-x-auto">
@@ -52,14 +82,14 @@ export default function AdminOrdersPage() {
                   </td>
                 </tr>
               ))
-            ) : orders.length === 0 ? (
+            ) : filteredOrders.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-5 py-8 text-center text-gray-400">
-                  No orders yet.
+                  {searchQuery.trim() ? "No orders match your search." : "No orders yet."}
                 </td>
               </tr>
             ) : (
-              orders.map((order) => (
+              filteredOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3 font-mono text-xs text-brand-dark font-semibold">
                     {order.orderNumber}

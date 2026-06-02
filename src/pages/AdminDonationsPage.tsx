@@ -1,15 +1,33 @@
+import { useMemo, useState } from "react";
 import AdminLayout from "../components/layout/AdminLayout";
 import { useDonations, useDonationStats } from "../hooks/useDonations";
 import { Heart, DollarSign, CheckCircle } from "lucide-react";
+import { matchesSearch } from "../lib/search";
 
 export default function AdminDonationsPage() {
   const { data: donations = [], isLoading } = useDonations();
   const { data: stats, isLoading: statsLoading } = useDonationStats();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredDonations = useMemo(
+    () =>
+      donations.filter((d) =>
+        matchesSearch(searchQuery, d.donorName, d.donorEmail, d.message, d.status, d.paymentReference)
+      ),
+    [donations, searchQuery]
+  );
 
   const totalAll = donations.reduce((sum, d) => sum + d.amount, 0) / 100;
 
   return (
-    <AdminLayout title="Donations">
+    <AdminLayout
+      title="Donations"
+      search={{
+        value: searchQuery,
+        onChange: setSearchQuery,
+        placeholder: "Search by donor, email, message, or status...",
+      }}
+    >
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex items-center gap-4">
@@ -75,14 +93,14 @@ export default function AdminDonationsPage() {
                   </td>
                 </tr>
               ))
-            ) : donations.length === 0 ? (
+            ) : filteredDonations.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-5 py-8 text-center text-gray-400">
-                  No donations yet.
+                  {searchQuery.trim() ? "No donations match your search." : "No donations yet."}
                 </td>
               </tr>
             ) : (
-              donations.map((d) => (
+              filteredDonations.map((d) => (
                 <tr key={d.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3 font-bold text-brand-dark">
                     ${(d.amount / 100).toFixed(2)}

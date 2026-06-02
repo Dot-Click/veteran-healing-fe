@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SmoothNavLink from "../common/SmoothNavLink";
-import { Menu, Search, ShoppingCart, User, LogOut, Settings, LayoutDashboard, Bell } from "lucide-react";
+import { Menu, ShoppingCart, User, LogOut, Settings, LayoutDashboard, Bell } from "lucide-react";
 import { NAV_LINKS } from "../../lib/constants";
 import { cn } from "../../lib/utils";
 import MobileMenu from "./MobileMenu";
@@ -68,13 +68,6 @@ export default function Header() {
 
             {/* Right action icons */}
             <div className="flex items-center gap-2 lg:gap-3">
-              <button
-                className="p-2 text-brand-dark hover:text-brand-cta transition-colors"
-                aria-label="Search"
-              >
-                <Search size={20} />
-              </button>
-
               {isAuthenticated && (
                 <Link
                   to="/cart"

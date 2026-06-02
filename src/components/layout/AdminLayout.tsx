@@ -7,13 +7,21 @@ import AdminNavBadge from "../admin/AdminNavBadge";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
 import ProfileModal from "../common/ProfileModal";
+import SearchInput from "../common/SearchInput";
+
+export interface AdminLayoutSearchProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
 
 interface AdminLayoutProps {
   children: ReactNode;
   title: string;
+  search?: AdminLayoutSearchProps;
 }
 
-export default function AdminLayout({ children, title }: AdminLayoutProps) {
+export default function AdminLayout({ children, title, search }: AdminLayoutProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -204,6 +212,17 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
             </div>
           </div>
         </header>
+
+        {search && (
+          <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3 sm:px-6 lg:px-8">
+            <SearchInput
+              value={search.value}
+              onChange={search.onChange}
+              placeholder={search.placeholder ?? "Search..."}
+              className="max-w-xl"
+            />
+          </div>
+        )}
 
         <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
