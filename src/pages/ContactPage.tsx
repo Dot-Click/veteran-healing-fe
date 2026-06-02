@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import MainLayout from "../components/layout/MainLayout";
+import { useAuth } from "../contexts/AuthContext";
 import { Mail, MessageCircle, PhoneCallIcon } from "lucide-react";
 import { FacebookIcon } from "../components/common/SocialIcons";
 import { CONTACT_INFO, SOCIAL_LINKS } from "../lib/constants";
@@ -8,9 +9,20 @@ import { ASSETS } from "../lib/assetPaths";
 import api from "../services/api";
 
 export default function ContactPage() {
+  const { user, isAuthenticated } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", order: "", email: "", message: "" });
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || user.name,
+        email: prev.email || user.email,
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { ShoppingCart, Shield, Leaf, Truck, Star, Send } from "lucide-react";
 import toast from "react-hot-toast";
@@ -10,6 +10,12 @@ import { formatPriceDollars } from "../lib/utils";
 import type { ProductVariant } from "../types/product.types";
 import { ASSETS } from "../lib/assetPaths";
 import api from "../services/api";
+import type { ApiReview } from "../types/review.types";
+import {
+  computeProductReviewStats,
+  mapApiReviewToProductReview,
+  type ProductReviewDisplay,
+} from "../types/review.types";
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -31,7 +37,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
 
   // Reviews state (from API + locally added)
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<ProductReviewDisplay[]>([]);
 
   // New review form state
   const [newAuthor, setNewAuthor] = useState("");
@@ -53,14 +59,23 @@ export default function ProductDetailPage() {
     const fetchReviews = async () => {
       if (!product?.id) return;
       try {
-        const response = await api.get(`/reviews/product/${product.id}`);
-        setReviews(response.data || []);
+        const response = await api.get<ApiReview[]>(`/reviews/product/${product.id}`);
+        const mapped = (response.data ?? []).map(mapApiReviewToProductReview);
+        setReviews(mapped);
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
       }
     };
     fetchReviews();
   }, [product?.id]);
+
+  const reviewStats = useMemo(() => computeProductReviewStats(reviews), [reviews]);
+
+  const displayAverage =
+    reviewStats.approvedCount > 0 ? reviewStats.averageRating.toFixed(1) : "—";
+
+  const filledStars =
+    reviewStats.approvedCount > 0 ? Math.round(reviewStats.averageRating) : 0;
 
   if (isError || (!isLoading && !product)) return <Navigate to="/shop" replace />;
 
@@ -84,15 +99,14 @@ export default function ProductDetailPage() {
     if (!product || !newAuthor || !newBody) return;
 
     try {
-      const newReview = await api.post('/reviews', {
+      const response = await api.post<ApiReview>("/reviews", {
         productId: product.id,
         authorName: newAuthor,
         rating: newRating,
         body: newBody,
       });
 
-      // Add new review to the list immediately
-      setReviews([newReview.data, ...reviews]);
+      setReviews([mapApiReviewToProductReview(response.data), ...reviews]);
 
       setNewAuthor("");
       setNewRating(5);
@@ -218,9 +232,13 @@ export default function ProductDetailPage() {
                   {formatPriceDollars(product.price * quantity)} $
                 </p>
                 <div className="flex items-center gap-1.5 bg-brand-cream border border-brand-primary/10 px-2.5 py-1 rounded-full text-sm">
-                  <Star size={14} className="fill-brand-gold text-brand-gold" />
-                  <span className="font-bold text-brand-dark">4.9</span>
-                  <span className="text-gray-400">({reviews.length} reviews)</span>
+                  <Star size={14} className={filledStars > 0 ? "fill-brand-gold text-brand-gold" : "text-gray-300"} />
+                  <span className="font-bold text-brand-dark">{displayAverage}</span>
+                  <span className="text-gray-400">
+                    ({reviewStats.approvedCount > 0
+                      ? `${reviewStats.approvedCount} review${reviewStats.approvedCount === 1 ? "" : "s"}`
+                      : "No ratings yet"})
+                  </span>
                 </div>
               </div>
 
@@ -403,15 +421,52 @@ export default function ProductDetailPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
               {/* Reviews Summary Stats */}
-              <div className="lg:col-span-1 bg-brand-cream-light border border-brand-border/20 p-6 rounded-2xl flex flex-col justify-center items-center text-center">
-                <h4 className="text-lg font-bold text-brand-dark mb-2">Overall Rating</h4>
-                <p className="text-5xl font-extrabold text-brand-primary mb-3">4.9</p>
-                <div className="flex gap-1 mb-2">
+              <div className="lg:col-span-1 bg-brand-cream-light border border-brand-border/20 p-6 rounded-2xl">
+                <h4 className="text-lg font-bold text-brand-dark mb-2 text-center">Overall Rating</h4>
+                <p className="text-5xl font-extrabold text-brand-primary mb-3 text-center">
+                  {displayAverage}
+                </p>
+                <div className="flex justify-center gap-1 mb-3">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={18} className="fill-brand-gold text-brand-gold" />
+                    <Star
+                      key={i}
+                      size={18}
+                      className={
+                        i < filledStars ? "fill-brand-gold text-brand-gold" : "text-gray-300"
+                      }
+                    />
                   ))}
                 </div>
-                <p className="text-sm text-gray-500 font-medium">Based on {reviews.length} reviews</p>
+                <p className="text-sm text-gray-500 font-medium text-center mb-4">
+                  {reviewStats.approvedCount > 0
+                    ? `Based on ${reviewStats.approvedCount} approved review${reviewStats.approvedCount === 1 ? "" : "s"}`
+                    : "No approved reviews yet"}
+                  {reviewStats.totalCount > reviewStats.approvedCount && (
+                    <span className="block text-xs text-gray-400 mt-1">
+                      {reviewStats.totalCount - reviewStats.approvedCount} pending moderation
+                    </span>
+                  )}
+                </p>
+                {reviewStats.approvedCount > 0 && (
+                  <div className="space-y-1.5 w-full">
+                    {([5, 4, 3, 2, 1] as const).map((star) => {
+                      const count = reviewStats.distribution[star];
+                      const percent = (count / reviewStats.approvedCount) * 100;
+                      return (
+                        <div key={star} className="flex items-center gap-2 text-xs text-gray-600">
+                          <span className="w-8 font-semibold">{star}★</span>
+                          <div className="flex-1 h-2 rounded-full bg-gray-200 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-brand-gold transition-all"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                          <span className="w-6 text-right tabular-nums">{count}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Reviews list */}
@@ -427,7 +482,14 @@ export default function ProductDetailPage() {
                             {rev.author ? rev.author[0].toUpperCase() : "A"}
                           </div>
                           <div>
-                            <h5 className="font-bold text-brand-dark text-sm">{rev.author}</h5>
+                            <div className="flex items-center gap-2">
+                              <h5 className="font-bold text-brand-dark text-sm">{rev.author}</h5>
+                              {!rev.isApproved && (
+                                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+                                  Pending
+                                </span>
+                              )}
+                            </div>
                             <span className="text-gray-400 text-xs">{rev.date}</span>
                           </div>
                         </div>

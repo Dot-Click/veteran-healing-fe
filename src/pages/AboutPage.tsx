@@ -263,6 +263,7 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+          
 
           {/* Heading and text */}
           <div className="text-center max-w-3xl mx-auto px-4">

@@ -17,6 +17,8 @@ import {
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNotifications } from "../../hooks/useNotifications";
+import { getUnreadCountForAdminNav } from "../../lib/adminNotifications";
+import AdminNavBadge from "./AdminNavBadge";
 
 export const ADMIN_NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
@@ -32,13 +34,21 @@ export const ADMIN_NAV_ITEMS = [
   { icon: Settings, label: "Settings", href: "/admin/settings" },
 ];
 
+export function useAdminNavBadgeCounts() {
+  const { data: notifications = [] } = useNotifications();
+
+  return {
+    notifications,
+    totalUnread: notifications.filter((n) => !n.read).length,
+    getCount: (href: string) => getUnreadCountForAdminNav(notifications, href),
+  };
+}
+
 export default function AdminNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { signout } = useAuth();
-  const { data: notifications = [] } = useNotifications();
-
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
+  const { totalUnread, getCount } = useAdminNavBadgeCounts();
 
   const handleSignout = async () => {
     const result = await signout();
@@ -51,56 +61,57 @@ export default function AdminNav() {
   };
 
   return (
-    <aside className="hidden w-64 flex-shrink-0 bg-brand-primary min-h-screen lg:flex lg:flex-col">
-      {/* Logo / Brand */}
-      <div className="flex h-24 items-center px-6 border-b border-r border-brand-accent/40">
-        <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-          <div
-            className="w-15 h-15 rounded-full flex items-center justify-center bg-white shadow-sm overflow-hidden"
-          >
-            <img src="/logo.webp" alt="Veteran Healing" className="w-[80px] object-contain" />
+    <aside className="hidden h-screen w-[15.5rem] flex-shrink-0 flex-col overflow-hidden bg-brand-primary lg:sticky lg:top-0 lg:flex">
+      <div className="flex-shrink-0 border-b border-brand-accent/40 px-4 py-1 border">
+        <Link
+          to="/"
+          className="mx-auto flex w-fit flex-col items-center gap-2 rounded-xl p-2 transition-opacity hover:opacity-90"
+        >
+          <div className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-white p-2 shadow-sm">
+            <img src="/logo.webp" alt="Veteran Healing" className="h-full w-full object-contain" />
           </div>
         </Link>
       </div>
 
-      <nav className="flex-1 p-3">
-        <ul className="space-y-1">
-          {ADMIN_NAV_ITEMS.map((item) => (
-            <li key={item.href}>
-              <Link
-                to={item.href}
-                className={cn(
-                  "flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  location.pathname === item.href
-                    ? "bg-brand-accent text-white"
-                    : "text-gray-300 hover:bg-brand-accent/40 hover:text-white"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon size={16} />
-                  {item.label}
-                </div>
-                {item.label === "Notifications" && unreadCount > 0 && (
-                  <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-red-500 text-white rounded-full">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <nav className="flex min-h-0 flex-1 flex-col p-2">
+        <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {ADMIN_NAV_ITEMS.map((item) => {
+            const badgeCount =
+              item.label === "Notifications" ? totalUnread : getCount(item.href);
 
-      <div className="p-3 border-t border-brand-accent/40">
-        <button
-          type="button"
-          onClick={handleSignout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-200 transition-colors hover:bg-brand-accent/40 hover:text-white"
-        >
-          <LogOut size={16} />
-          Sign Out
-        </button>
-      </div>
+            return (
+              <li key={item.href}>
+                <Link
+                  to={item.href}
+                  className={cn(
+                    "flex items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-[13px] font-medium leading-tight transition-colors",
+                    location.pathname === item.href
+                      ? "bg-brand-accent text-white"
+                      : "text-gray-300 hover:bg-brand-accent/40 hover:text-white"
+                  )}
+                >
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <item.icon size={15} className="flex-shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                  </div>
+                  <AdminNavBadge count={badgeCount} />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="flex-shrink-0 border-t border-brand-accent/40 pt-2">
+          <button
+            type="button"
+            onClick={handleSignout}
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-semibold text-gray-200 transition-colors hover:bg-brand-accent/40 hover:text-white"
+          >
+            <LogOut size={15} />
+            Sign Out
+          </button>
+        </div>
+      </nav>
     </aside>
   );
 }

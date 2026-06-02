@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
 import { io, Socket } from 'socket.io-client';
+import { getSocketBaseUrl } from '../lib/socket';
 
 export function useSocketNotifications() {
   const { user } = useAuth();
@@ -16,10 +17,12 @@ export function useSocketNotifications() {
 
     // Connect to Socket.io server
     console.log('[SOCKET] Connecting as user:', user.id);
-    const socket = io('http://localhost:3000', {
+    const socket = io(getSocketBaseUrl(), {
+      path: '/socket.io',
       auth: {
         userId: user.id,
       },
+      transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 10,

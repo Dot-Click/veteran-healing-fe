@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AdminLayout from "../components/layout/AdminLayout";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ContactSubmission {
   id: string;
@@ -16,10 +17,13 @@ interface ContactSubmission {
   reviewer?: { id: string; email: string; name: string };
 }
 
+type FilterStatus = "all" | "new" | "reviewed" | "resolved";
+
 export default function AdminContactPage() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<"all" | "new" | "reviewed" | "resolved">("all");
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
 
   const { data: submissions = [], isLoading } = useQuery({
     queryKey: ["contact-submissions"],
@@ -29,9 +33,30 @@ export default function AdminContactPage() {
     },
   });
 
+  const statusCounts = useMemo(
+    () => ({
+      all: submissions.length,
+      new: submissions.filter((s) => s.status === "new").length,
+      reviewed: submissions.filter((s) => s.status === "reviewed").length,
+      resolved: submissions.filter((s) => s.status === "resolved").length,
+    }),
+    [submissions]
+  );
+
+  const filtered = useMemo(
+    () => submissions.filter((s) => filterStatus === "all" || s.status === filterStatus),
+    [submissions, filterStatus]
+  );
+
+  const selected = useMemo(() => {
+    const fromFiltered = filtered.find((s) => s.id === selectedId);
+    if (fromFiltered) return fromFiltered;
+    return submissions.find((s) => s.id === selectedId);
+  }, [filtered, submissions, selectedId]);
+
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "new" | "reviewed" | "resolved" }) => {
-      await api.patch(`/contact/${id}/status`, { status });
+      await api.patch(`/contact/${id}/status`, { status, reviewedBy: user?.id });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["contact-submissions"] });
@@ -42,21 +67,24 @@ export default function AdminContactPage() {
     },
   });
 
-  const filtered = submissions.filter((s) => filterStatus === "all" || s.status === filterStatus);
-  const selected = submissions.find((s) => s.id === selectedId);
-
   const statusColors: Record<string, string> = {
     new: "bg-yellow-100 text-yellow-800",
     reviewed: "bg-blue-100 text-blue-800",
     resolved: "bg-green-100 text-green-800",
   };
 
+  const filterLabels: Record<FilterStatus, string> = {
+    all: "All",
+    new: "New",
+    reviewed: "Reviewed",
+    resolved: "Resolved",
+  };
+
   return (
     <AdminLayout title="Contact Form Submissions">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* List */}
         <div className="lg:col-span-2">
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-4">
             {(["all", "new", "reviewed", "resolved"] as const).map((status) => (
               <button
                 key={status}
@@ -67,7 +95,7 @@ export default function AdminContactPage() {
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                {status.charAt(0).toUpperCase() + status.slice(1)} ({filtered.length})
+                {filterLabels[status]} ({statusCounts[status]})
               </button>
             ))}
           </div>
@@ -78,7 +106,7 @@ export default function AdminContactPage() {
             ) : filtered.length === 0 ? (
               <div className="p-8 text-center text-gray-500">No submissions found</div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100 max-h-[calc(100vh-14rem)] overflow-y-auto">
                 {filtered.map((submission) => (
                   <button
                     key={submission.id}
@@ -113,10 +141,9 @@ export default function AdminContactPage() {
           </div>
         </div>
 
-        {/* Detail View */}
         <div className="lg:col-span-1">
           {selected ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:sticky lg:top-4">
               <h3 className="text-lg font-bold text-gray-900 mb-4">{selected.subject}</h3>
 
               <div className="space-y-4 mb-6">
@@ -151,14 +178,12 @@ export default function AdminContactPage() {
                 {(["new", "reviewed", "resolved"] as const).map((status) => (
                   <button
                     key={status}
-                    onClick={() =>
-                      updateStatusMutation.mutate({ id: selected.id, status })
-                    }
+                    onClick={() => updateStatusMutation.mutate({ id: selected.id, status })}
                     disabled={selected.status === status || updateStatusMutation.isPending}
                     className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       selected.status === status
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        ? "bg-brand-cream text-brand-primary cursor-not-allowed"
+                        : "bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white"
                     }`}
                   >
                     Mark as {status}
