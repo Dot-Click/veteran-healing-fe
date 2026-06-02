@@ -1,23 +1,15 @@
-import { Link } from "react-router-dom";
 import { FacebookIcon, InstagramIcon } from "../common/SocialIcons";
+import SmoothNavLink from "../common/SmoothNavLink";
 import { SOCIAL_LINKS, CONTACT_INFO, COMMUNITY_LINKS } from "../../lib/constants";
 import LegalDisclaimerFooter from "./LegalDisclaimerFooter";
 
 const FOOTER_LINKS = {
   company: [
     { label: "About Us", href: "/about" },
-    { label: "Our Mission", href: "/about#mission" },
-    { label: "Meet The Team", href: "/about#team" },
     { label: "Statement of Faith", href: "/statement-of-faith" },
     { label: "Reviews", href: "/reviews" },
   ],
-  shop: [
-    { label: "Sacraments", href: "/shop" },
-    { label: "Microdose Capsules", href: "/shop/microdose-capsules" },
-    { label: "Mushroom Chocolate", href: "/shop/mushroom-chocolate" },
-    { label: "Apparel", href: "/shop?category=apparel" },
-    { label: "Bundles", href: "/shop?category=bundles" },
-  ],
+  shop: [{ label: "Sacraments", href: "/shop" }],
   support: [
     { label: "Contact Us", href: "/contact" },
     { label: "Donation", href: "/donation" },
@@ -37,7 +29,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {/* Brand column */}
             <div className="sm:col-span-2 lg:col-span-1">
-              <Link to="/" className="inline-flex items-center gap-2 mb-4 group">
+              <SmoothNavLink to="/" className="inline-flex items-center gap-2 mb-4 group">
                 <img src="/logo.webp" alt="" className="w-24 h-auto" />
                 {/* <span className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-gold/20 border border-brand-gold/40">
                   <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6" aria-hidden="true">
@@ -51,7 +43,7 @@ export default function Footer() {
                   <span className="text-brand-gold font-bold text-sm tracking-wide uppercase">Veteran Healing</span>
                   <span className="text-gray-500 text-xs tracking-widest uppercase">By Vets · For Vets</span>
                 </span> */}
-              </Link>
+              </SmoothNavLink>
               <p className="text-gray-400 text-sm leading-relaxed mb-4">
                 A veteran-founded 501(c)(3) nonprofit dedicated to natural, holistic healing for those
                 who have served. 100% of profits support veteran suicide prevention.
@@ -86,12 +78,12 @@ export default function Footer() {
               <ul className="space-y-2">
                 {FOOTER_LINKS.company.map((link) => (
                   <li key={link.href}>
-                    <Link
+                    <SmoothNavLink
                       to={link.href}
                       className="text-gray-400 hover:text-white transition-colors text-sm"
                     >
                       {link.label}
-                    </Link>
+                    </SmoothNavLink>
                   </li>
                 ))}
               </ul>
@@ -105,12 +97,12 @@ export default function Footer() {
               <ul className="space-y-2">
                 {FOOTER_LINKS.shop.map((link) => (
                   <li key={link.href}>
-                    <Link
+                    <SmoothNavLink
                       to={link.href}
                       className="text-gray-400 hover:text-white transition-colors text-sm"
                     >
                       {link.label}
-                    </Link>
+                    </SmoothNavLink>
                   </li>
                 ))}
               </ul>
@@ -134,12 +126,12 @@ export default function Footer() {
                         {link.label}
                       </a>
                     ) : (
-                      <Link
+                      <SmoothNavLink
                         to={link.href}
                         className="text-gray-400 hover:text-white transition-colors text-sm"
                       >
                         {link.label}
-                      </Link>
+                      </SmoothNavLink>
                     )}
                   </li>
                 ))}
@@ -160,14 +152,6 @@ export default function Footer() {
             <p className="text-gray-500 text-xs text-center sm:text-left">
               Copyright &copy; {new Date().getFullYear()} Veteran Healing &mdash; All Rights Reserved.*
             </p>
-            <div className="flex gap-4 text-xs text-gray-500">
-              <Link to="/privacy" className="hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
-              <Link to="/terms" className="hover:text-white transition-colors">
-                Terms of Service
-              </Link>
-            </div>
           </div>
         </div>
       </div>

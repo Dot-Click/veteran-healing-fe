@@ -38,6 +38,8 @@ import v38 from "../assets/images/veteran38.webp";
 import v39 from "../assets/images/veteran39.svg";
 import v40 from "../assets/images/veteran40.svg";
 import v41 from "../assets/images/veteran41.webp";
+import jack from "../assets/images/jack.jpg";
+import keanu from "../assets/images/keanu.jpg";
 
 // ─── Icons ─────────────────────────────────────────────────────────────────
 import iconVeteranAssets from "../assets/icons/veteran assets.svg";
@@ -71,9 +73,9 @@ export const ASSETS = {
   MUSHROOM_PRODUCT: v21,      // product placeholder photo
 
   // ── Veteran Stories ───────────────────────────────────────────────────────
-  STORY_JACK: v23,
-  STORY_KEANU: v24,
-  STORY_ELIJAH: v25,
+  STORY_JACK: jack, 
+  STORY_KEANU: keanu,
+  STORY_ELIJAH: v22,
 
   // ── Reviewer Avatars ──────────────────────────────────────────────────────
   REVIEWER_1: v29,  // Austin B.

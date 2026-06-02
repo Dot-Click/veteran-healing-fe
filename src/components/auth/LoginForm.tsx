@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
 import { getDashboardPath } from "../../lib/authRedirects";
@@ -11,6 +11,7 @@ interface LoginFormProps {
 export default function LoginForm({ onSwitchToSignup }: LoginFormProps) {
   const { signin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +33,10 @@ export default function LoginForm({ onSwitchToSignup }: LoginFormProps) {
       if (result.success) {
         const data = result.data as { user?: { role?: string } } | undefined;
         toast.success("Signed in successfully.");
-        navigate(getDashboardPath(data?.user?.role), { replace: true });
+        const destination =
+          (location.state as { from?: string } | null)?.from ||
+          getDashboardPath(data?.user?.role);
+        navigate(destination, { replace: true });
       } else {
         toast.error(result.error ?? "Invalid email or password.");
       }

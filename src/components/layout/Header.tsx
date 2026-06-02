@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import SmoothNavLink from "../common/SmoothNavLink";
 import { Menu, Search, ShoppingCart, User, LogOut, Settings, LayoutDashboard, Bell } from "lucide-react";
 import { NAV_LINKS } from "../../lib/constants";
 import { cn } from "../../lib/utils";
@@ -74,15 +75,15 @@ export default function Header() {
           <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
+            <SmoothNavLink to="/" className="flex items-center gap-2 flex-shrink-0 group">
               <img src="/logo.webp" alt="Veteran Healing Logo" className="w-[70px]" />
               {/* <img src={veter} alt="" /> */}
-            </Link>
+            </SmoothNavLink>
 
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
               {NAV_LINKS.map((link) => (
-                <Link
+                <SmoothNavLink
                   key={link.href}
                   to={link.href}
                   className={cn(
@@ -93,7 +94,7 @@ export default function Header() {
                   )}
                 >
                   {link.label}
-                </Link>
+                </SmoothNavLink>
               ))}
             </nav>
 
@@ -106,18 +107,20 @@ export default function Header() {
                 <Search size={20} />
               </button>
 
-              <Link
-                to="/cart"
-                className="relative p-2 text-brand-dark hover:text-brand-cta transition-colors"
-                aria-label={`Shopping cart, ${totalItems} items`}
-              >
-                <ShoppingCart size={20} />
-                {totalItems > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-brand-gold text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center leading-none">
-                    {totalItems > 9 ? "9+" : totalItems}
-                  </span>
-                )}
-              </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/cart"
+                  className="relative p-2 text-brand-dark hover:text-brand-cta transition-colors"
+                  aria-label={`Shopping cart, ${totalItems} items`}
+                >
+                  <ShoppingCart size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 bg-brand-gold text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center leading-none">
+                      {totalItems > 9 ? "9+" : totalItems}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               {isAuthenticated && (
                 <Link
@@ -174,16 +177,7 @@ export default function Header() {
                               <LayoutDashboard size={16} />
                               Admin Dashboard
                             </Link>
-                          ) : (
-                            <Link
-                              to="/dashboard"
-                              className="flex items-center gap-2 px-3 py-2 text-sm text-brand-dark hover:bg-brand-cream hover:text-brand-primary rounded-xl transition-all"
-                              onClick={() => setUserDropdownOpen(false)}
-                            >
-                              <LayoutDashboard size={16} />
-                              My Dashboard
-                            </Link>
-                          )}
+                          ) : ""}
                           <button
                             type="button"
                             className="flex w-full items-center gap-2 px-3 py-2 text-sm text-brand-dark hover:bg-brand-cream hover:text-brand-primary rounded-xl transition-all text-left"

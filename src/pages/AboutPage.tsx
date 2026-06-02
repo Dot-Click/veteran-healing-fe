@@ -69,7 +69,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Our Mission Section ─── */}
-      <section className="bg-white py-20 lg:py-28 border-b border-brand-border/10">
+      <section id="mission" className="scroll-mt-24 bg-white py-20 lg:py-28 border-b border-brand-border/10">
         <div className="container-site">
           <div className="flex flex-col lg:flex-row gap-16 items-center max-w-6xl mx-auto">
             {/* Left Column - Content */}
@@ -174,7 +174,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Meet Our Team Section ─── */}
-      <section id="team" className="bg-brand-cream py-20 lg:py-28">
+      <section id="team" className="scroll-mt-24 bg-brand-cream py-20 lg:py-28">
         <div className="container-site">
           <h2 className="text-3xl lg:text-4xl font-bold text-brand-dark text-center mb-4">
             Meet Our Team
@@ -195,7 +195,7 @@ export default function AboutPage() {
                   <img
                     src={story.image}
                     alt={story.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                     loading="lazy"
                   />
                 </div>

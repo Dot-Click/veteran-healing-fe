@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import SmoothNavLink from "../common/SmoothNavLink";
 import { NAV_LINKS, SOCIAL_LINKS } from "../../lib/constants";
 import { cn } from "../../lib/utils";
 
@@ -56,7 +57,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <ul className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <Link
+                <SmoothNavLink
                   to={link.href}
                   onClick={onClose}
                   className={cn(
@@ -67,19 +68,19 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   )}
                 >
                   {link.label}
-                </Link>
+                </SmoothNavLink>
               </li>
             ))}
           </ul>
 
           <div className="px-6 pt-6 flex flex-col gap-3">
-            <Link
+            <SmoothNavLink
               to="/shop"
               onClick={onClose}
               className="btn-secondary text-center justify-center text-sm border-white text-white hover:bg-white hover:text-brand-primary"
             >
               Shop Now
-            </Link>
+            </SmoothNavLink>
           </div>
         </nav>
 

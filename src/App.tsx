@@ -6,6 +6,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { queryClient } from "./lib/queryClient";
 import { NotificationListener } from "./components/NotificationListener";
 import AppRoutes from "./routes";
+import ScrollManager from "./components/common/ScrollManager";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
     <AuthProvider>
       <NotificationListener />
       <BrowserRouter>
+        <ScrollManager />
         <CartProvider>
           <Toaster
             position="top-right"

@@ -40,8 +40,22 @@ export default function AppRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/shop/:slug" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/donation" element={<DonationPage />} />
         <Route path="/free-guide" element={<FreeGuidePage />} />
         <Route path="/reviews" element={<ReviewsPage />} />
