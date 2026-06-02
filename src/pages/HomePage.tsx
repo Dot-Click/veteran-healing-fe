@@ -13,6 +13,7 @@ import api from "../services/api";
 import ContentAreaLoader from "../components/common/ContentAreaLoader";
 import { useTopReviews } from "../hooks/useReviews";
 import { mapApiReviewToHomeCard } from "../types/review.types";
+import MobileReviewCarousel from "../components/common/MobileReviewCarousel";
 
 const IMPACT_STATS = [
   { value: "22", label: "Veterans lost daily to suicide" },
@@ -51,56 +52,52 @@ const FAQ_ITEMS = [
   },
   {
     q: "Do you offer local delivery?",
-    a: "Dosage varies depending on individual sensitivity and goals. Our Free Microdose Guide provides comprehensive, step-by-step instructions on safe dosage and schedules.",
+    a: "Yes! For those living in the decriminalized areas of Sommerville, Medford and Cambridge, Massachusetts. Otherwise, we have mail order for those living in the other 49 states. ",
   },
   {
-    q: "What are the side effects?",
-    a: "At microdose levels, side effects are minimal but may include mild stomach discomfort or slight changes in perception. Always start with a low dose to evaluate tolerance.",
+    q: "Can you ship to all 50 States?",
+    a: "Yes! As a church organization protected under the Religious Freedoms Restoration Act of 1993, we are able to send the sacrament (mushroom capsules) to all of our donating members. So rest assured that wherever you are, your package is on the way! Discreet Shipping: We understand the importance of privacy. Your orders are shipped in discreet packaging for your confidentiality and peace of mind.",
   },
   {
-    q: "Is it legal?",
-    a: "All sacraments are offered for research, religious, ceremonial, novelty, or souvenir purposes only. Please follow all local, state, and federal laws.",
+    q: "Are you a farm to table church?",
+    a: "Yes! Unlike most of the shady people invading this space as it gains popularity in the mainstream, we do not pull from third parties/unethical sources. ALL of our Sacraments are grown on our organic farm by fellow VETERANS.",
   },
   {
-    q: "Do you ship discrete?",
-    a: "Yes, all orders are shipped in plain, unmarked packaging to ensure complete privacy and discretion.",
+    q: "Is this Veteran owned and operated?",
+    a: "Yes! We are Veteran owned and operated. Not to mention we only employ other veterans as well.",
   },
   {
-    q: "What is your return policy?",
-    a: "Due to the nature of our sacraments, all donations and orders are final. However, if there is an issue with your delivery, please contact our support team.",
+    q: "Do you match donations to the Veteran Community?",
+    a: "Yes! We match every sacrament that we send out by donating them directly 1-1 to veterans who cannot afford the medicine they depend on to live a normal life.",
   },
   {
-    q: "How can I contact customer service?",
-    a: "You can reach us through our contact page, join our private Facebook group, or email support@veteranhealing.org for direct assistance.",
+    q: "Are there any specific instructions or guidelines for using your wellness products?",
+    a: "Each of our products comes with detailed usage instructions on the packaging and on the bottom of each page on the desired sacrament. It is essential to follow these instructions carefully for optimal results and safety.",
   },
   {
-    q: "How long does shipping take?",
-    a: "Orders are typically processed within 1-2 business days, and shipping usually takes 3-5 business days depending on your location.",
+    q: "Do your products have any certifications or third-party lab testing?",
+    a: "Yes, our products undergo third-party lab testing to ensure purity, potency, and safety. We also hold various certifications that demonstrate our commitment to quality and compliance with industry standards.",
   },
   {
-    q: "Where do you ship from?",
-    a: "All sacraments are grown, processed, and shipped directly from our veteran-operated facility in the United States.",
+    q: "How can customers contact you for assistance or inquiries?",
+    a: "We are here to assist you. Please feel free to contact our customer support team via support@veteranhealing.org",
   },
   {
-    q: "Can I track my order?",
-    a: "Yes, once your order is processed, you will receive a confirmation email containing tracking details to monitor your delivery.",
+    q: "How long will it take for my order to arrive?",
+    a: "All orders are shipped within 3 business days of receiving your order.Most orders are delivered within 6-7 days from order date.",
   },
   {
-    q: "Do you have an affiliate program?",
-    a: "Yes, we have a rewarding affiliate program. You can learn more and sign up by clicking the 'Become an Affiliate' button at the bottom of our homepage.",
+    q: "How does Veteran Healing Church give back to the veteran community, and are there any initiatives or partnerships in place?",
+    a: "At Veteran Healing, we are committed to supporting the veteran community. We actively participate in various initiatives and partnerships aimed at providing assistance and resources to veterans. Our commitment to community involvement is integral to our mission and values. 100% of our profits go to programs involved with Veteran mental health.",
   },
   {
-    q: "Do you offer veteran discounts?",
-    a: "Yes, we offer special support and resources specifically tailored for veterans and active duty members. Contact us for details.",
+    q: "How do you ensure customer satisfaction?",
+    a: "100% Satisfaction: We prioritize your satisfaction above all else. If you're not completely satisfied with your purchase, please contact us, and we'll do everything we can to make it right.",
   },
   {
-    q: "What is the shelf life of sacraments?",
-    a: "When stored properly, our dried mushroom sacraments and capsules can maintain potency for up to 1-2 years.",
-  },
-  {
-    q: "How should I store them?",
-    a: "Store in a cool, dry, and dark place in an airtight container, away from direct sunlight, moisture, and heat.",
-  },
+    q: "What is your customer service availability?",
+    a: "6 Day Customer Service: Our dedicated support team is available seven days a week to assist you with any questions, concerns, or assistance you may need. Contact us anytime, and we'll be happy to help. Sunday is our day off. ",
+  }
 ];
 
 
@@ -307,7 +304,7 @@ export default function HomePage() {
               {featuredProducts.map((product) => (
                 <div
                   key={product.id}
-                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  // onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                   className="cursor-pointer"
                 >
                   <ProductCard product={product} />
@@ -445,7 +442,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="relative max-w-6xl mx-auto px-4 md:px-12">
+          <div className="relative max-w-6xl mx-auto px-2 sm:px-4 md:px-12">
             {reviewsLoading ? (
               <ContentAreaLoader
                 variant="skeleton-cards"
@@ -456,27 +453,29 @@ export default function HomePage() {
               <p className="text-center text-gray-300 py-12">Reviews coming soon.</p>
             ) : (
               <>
-                {/* Carousel Navigation Arrow Controls */}
+                {/* Carousel Navigation Arrow Controls - show on tablets and up, mobile uses swipe/scroll */}
                 <button
                   onClick={prevReview}
-                  className="absolute left-0 md:left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10"
+                  className="absolute left-0 md:left-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10 hidden sm:flex"
                   aria-label="Previous review"
                 >
                   <ChevronLeft size={20} className="text-brand-cta" />
                 </button>
-
                 <button
                   onClick={nextReview}
-                  className="absolute right-0 md:right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10"
+                  className="absolute right-0 md:right-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10 hidden sm:flex"
                   aria-label="Next review"
                 >
                   <ChevronRight size={20} className="text-brand-cta" />
                 </button>
 
-                {/* Testimonials Slide Frame */}
-                <div className="overflow-hidden w-full">
+                {/* --- Mobile swipeable carousel with center card + neighbors & auto scroll --- */}
+                <MobileReviewCarousel testimonials={testimonials} />
+
+                {/* --- Desktop/Tablet carousel: show centered card among three, using translateX --- */}
+                <div className="hidden sm:block overflow-hidden w-full relative">
                   <div
-                    className="flex transition-transform duration-500 ease-in-out gap-6"
+                    className="flex gap-6 transition-transform duration-500 ease-in-out"
                     style={{
                       transform: `translateX(-${currentReviewIndex * (100 / cardsPerView)}%)`,
                     }}

@@ -19,6 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <img
               src={product.images[0]}
               alt={product.name}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
