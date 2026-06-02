@@ -1,9 +1,22 @@
+import { useMemo } from "react";
 import MainLayout from "../components/layout/MainLayout";
-import { MOCK_REVIEWS } from "../data/mockReviews";
 import { Star } from "lucide-react";
 import { ASSETS } from "../lib/assetPaths";
+import InfiniteScrollSentinel from "../components/common/InfiniteScrollSentinel";
+import ContentAreaLoader from "../components/common/ContentAreaLoader";
+import { useApprovedReviewsInfinite } from "../hooks/useReviews";
+import { mapApiReviewToProductReview } from "../types/review.types";
 
 export default function ReviewsPage() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
+    useApprovedReviewsInfinite();
+
+  const reviews = useMemo(
+    () =>
+      (data?.pages.flatMap((page) => page.items) ?? []).map(mapApiReviewToProductReview),
+    [data]
+  );
+
   return (
     <MainLayout>
       {/* Hero */}
@@ -17,7 +30,8 @@ export default function ReviewsPage() {
         </div>
       </section>
 
-      <section className="bg-white py-16 lg:py-20"
+      <section
+        className="bg-white py-16 lg:py-20"
         style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})` }}
       >
         <div className="container-site">
@@ -33,46 +47,65 @@ export default function ReviewsPage() {
             handcrafted remedies:
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MOCK_REVIEWS.map((review) => (
-              <article
-                key={review.id}
-                className="bg-brand-cream-light rounded-xl border border-brand-border/20 p-6 relative"
-              >
-                <div className="flex gap-0.5 mb-4" aria-label={`${review.rating} out of 5 stars`}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      className={i < review.rating ? "fill-brand-gold text-brand-gold" : "text-gray-300"}
-                    />
-                  ))}
-                </div>
-                <p className="text-gray-700 text-sm leading-relaxed mb-6">{review.body}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {review.avatar ? (
-                      <img
-                        src={review.avatar}
-                        alt={review.author}
-                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-brand-primary/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-brand-primary font-bold text-sm">{review.author[0]}</span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-bold text-brand-dark">{review.author}</p>
-                      <p className="text-xs text-brand-accent">{review.productName}</p>
+          {isLoading ? (
+            <ContentAreaLoader variant="skeleton-cards" count={6} className="max-w-6xl mx-auto" />
+          ) : isError ? (
+            <p className="text-center text-red-500 py-12">
+              Unable to load reviews. Please try again later.
+            </p>
+          ) : reviews.length === 0 ? (
+            <p className="text-center text-gray-500 py-12">No reviews yet. Check back soon.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {reviews.map((review) => (
+                  <article
+                    key={review.id}
+                    className="bg-brand-cream-light rounded-xl border border-brand-border/20 p-6 relative"
+                  >
+                    <div className="flex gap-0.5 mb-4" aria-label={`${review.rating} out of 5 stars`}>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          size={16}
+                          className={
+                            i < review.rating ? "fill-brand-gold text-brand-gold" : "text-gray-300"
+                          }
+                        />
+                      ))}
                     </div>
-                  </div>
-                  <span className="text-brand-border/40 text-5xl font-serif leading-none">"</span>
-                </div>
-              </article>
-            ))}
-          </div>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-6">{review.body}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-brand-primary/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-brand-primary font-bold text-sm">
+                            {review.author[0]}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-bold text-brand-dark">{review.author}</p>
+                          <p className="text-xs text-brand-accent">{review.productName}</p>
+                        </div>
+                      </div>
+                      <span className="text-brand-border/40 text-5xl font-serif leading-none">
+                        "
+                      </span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <InfiniteScrollSentinel
+                hasMore={!!hasNextPage}
+                isLoading={isFetchingNextPage}
+                onLoadMore={() => fetchNextPage()}
+              />
+
+              {!hasNextPage && reviews.length > 0 && (
+                <p className="text-center text-sm text-gray-400 mt-4">You've seen all reviews.</p>
+              )}
+            </>
+          )}
         </div>
       </section>
     </MainLayout>

@@ -17,7 +17,7 @@ function mapCategory(c: string): ProductCategory {
   return c as ProductCategory;
 }
 
-export function mapProduct(raw: any): Product {
+export function mapProduct(raw: Record<string, unknown> | any): Product {
   const images: string[] =
     Array.isArray(raw.images) && raw.images.length > 0
       ? raw.images

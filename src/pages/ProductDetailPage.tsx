@@ -62,26 +62,15 @@ export default function ProductDetailPage() {
     fetchReviews();
   }, [product?.id]);
 
-  if (isLoading) {
-    return (
-      <MainLayout>
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full border-4 border-brand-primary border-t-transparent animate-spin" />
-        </div>
-      </MainLayout>
-    );
-  }
-
-  if (isError || !product) return <Navigate to="/shop" replace />;
+  if (isError || (!isLoading && !product)) return <Navigate to="/shop" replace />;
 
   // Gallery images list (forces exactly 3 images using fallback product placeholders)
-  const allImages = [
-    product.images[0],
-    ASSETS.MUSHROOM_PRODUCT,
-    ASSETS.ABOUT_BG,
-  ].filter(Boolean);
+  const allImages = product
+    ? [product.images[0], ASSETS.MUSHROOM_PRODUCT, ASSETS.ABOUT_BG].filter(Boolean)
+    : [];
 
   const handleAddToCart = () => {
+    if (!product) return;
     // Add multiple items if quantity > 1
     for (let i = 0; i < quantity; i++) {
       addItem(product, selectedVariant);
@@ -92,7 +81,7 @@ export default function ProductDetailPage() {
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAuthor || !newBody) return;
+    if (!product || !newAuthor || !newBody) return;
 
     try {
       const newReview = await api.post('/reviews', {
@@ -119,9 +108,11 @@ export default function ProductDetailPage() {
   };
 
   // Get max 4 related products from same category, excluding the current product
-  const relatedProducts = allProducts
-    .filter((p) => p.id !== product.id && p.category === product.category)
-    .slice(0, 4);
+  const relatedProducts = product
+    ? allProducts
+        .filter((p) => p.id !== product.id && p.category === product.category)
+        .slice(0, 4)
+    : [];
 
   // Apparel color swatches
   const apparelColors = [
@@ -143,11 +134,43 @@ export default function ProductDetailPage() {
             <span>/</span>
             <Link to="/shop" className="hover:text-brand-cta transition-colors">Sacraments</Link>
             <span>/</span>
-            <span className="text-brand-dark font-medium">{product.name}</span>
+            {isLoading || !product ? (
+              <span className="inline-block h-4 w-32 animate-pulse rounded bg-gray-200" />
+            ) : (
+              <span className="text-brand-dark font-medium">{product.name}</span>
+            )}
           </nav>
         </div>
       </section>
 
+      {isLoading || !product ? (
+        <section className="bg-brand-cream-light py-12">
+          <div className="container-site max-w-6xl mx-auto">
+            <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
+              <div className="mx-auto w-full max-w-xl flex-1">
+                <div className="aspect-[4/3] animate-pulse rounded-2xl border border-brand-border/20 bg-white" />
+                <div className="mt-4 grid grid-cols-3 gap-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="aspect-[4/3] animate-pulse rounded-xl bg-white" />
+                  ))}
+                </div>
+              </div>
+              <div className="w-full max-w-xl flex-1 space-y-4">
+                <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                <div className="h-10 w-3/4 animate-pulse rounded bg-gray-200" />
+                <div className="h-8 w-32 animate-pulse rounded bg-gray-200" />
+                <div className="space-y-2">
+                  <div className="h-4 w-full animate-pulse rounded bg-gray-100" />
+                  <div className="h-4 w-full animate-pulse rounded bg-gray-100" />
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-gray-100" />
+                </div>
+                <div className="h-14 animate-pulse rounded-xl bg-gray-100" />
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
       {/* Main Details Section */}
       <section className="bg-brand-cream-light py-12">
         <div className="container-site">
@@ -509,6 +532,8 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </section>
+      )}
+        </>
       )}
     </MainLayout>
   );

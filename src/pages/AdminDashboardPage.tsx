@@ -1,6 +1,7 @@
 import AdminLayout from "../components/layout/AdminLayout";
 import { Link } from "react-router-dom";
-import { ShoppingBag, DollarSign, Users, Heart, AlertCircle, Mail } from "lucide-react";
+import { ShoppingBag, DollarSign, Users, Heart, AlertCircle, Mail, Star, Share2 } from "lucide-react";
+import { useAdminFeaturedProducts } from "../hooks/useFeaturedProducts";
 import { useOrders } from "../hooks/useOrders";
 import { useDonationStats } from "../hooks/useDonations";
 import { useAffiliates } from "../hooks/useAffiliates";
@@ -41,6 +42,10 @@ export default function AdminDashboardPage() {
   const { data: donationStats, isLoading: statsLoading } = useDonationStats();
   const { data: affiliates = [], isLoading: affiliatesLoading } = useAffiliates();
   const { data: contacts = [] } = useContacts();
+  const { data: featuredPlacements = [], isLoading: featuredLoading } = useAdminFeaturedProducts();
+
+  const homepageFeaturedCount = featuredPlacements.filter((p) => p.section === "homepage").length;
+  const socialFeaturedCount = featuredPlacements.filter((p) => p.section === "social").length;
 
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0) / 100;
   const pendingOrders = orders.filter((o) => o.status === "pending").length;
@@ -111,6 +116,52 @@ export default function AdminDashboardPage() {
           )}
         </div>
       )}
+
+      {/* Featured products */}
+      <div className="mb-8 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+        <div className="flex flex-col gap-4 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-semibold text-brand-dark flex items-center gap-2">
+              <Star size={18} className="text-brand-cta" />
+              Homepage Featured &amp; Social
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Manage products shown on the homepage featured grid and Instagram feed.
+            </p>
+          </div>
+          <Link
+            to="/admin/featured"
+            className="inline-flex items-center justify-center rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-cta transition-colors"
+          >
+            Manage Featured
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+          <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Homepage grid
+            </p>
+            {featuredLoading ? (
+              <div className="mt-2 h-8 w-12 animate-pulse rounded bg-gray-200" />
+            ) : (
+              <p className="mt-1 text-2xl font-bold text-brand-dark">{homepageFeaturedCount}</p>
+            )}
+            <p className="mt-1 text-xs text-gray-500">Featured sacrament cards</p>
+          </div>
+          <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 flex items-center gap-1">
+              <Share2 size={12} />
+              Social feed
+            </p>
+            {featuredLoading ? (
+              <div className="mt-2 h-8 w-12 animate-pulse rounded bg-gray-200" />
+            ) : (
+              <p className="mt-1 text-2xl font-bold text-brand-dark">{socialFeaturedCount}</p>
+            )}
+            <p className="mt-1 text-xs text-gray-500">Instagram-style product tiles</p>
+          </div>
+        </div>
+      </div>
 
       {/* Recent Orders */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

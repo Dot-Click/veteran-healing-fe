@@ -11,6 +11,8 @@ import {
   Users,
   FileText,
   Bell,
+  MessageSquare,
+  Star,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
@@ -19,9 +21,11 @@ import { useNotifications } from "../../hooks/useNotifications";
 export const ADMIN_NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
   { icon: Package, label: "Products", href: "/admin/products" },
+  { icon: Star, label: "Featured", href: "/admin/featured" },
   { icon: ShoppingBag, label: "Orders", href: "/admin/orders" },
   { icon: Heart, label: "Donations", href: "/admin/donations" },
   { icon: Users, label: "Affiliates", href: "/admin/affiliates" },
+  { icon: MessageSquare, label: "Reviews", href: "/admin/reviews" },
   { icon: Mail, label: "Contact Form", href: "/admin/contact" },
   { icon: FileText, label: "Free Guide", href: "/admin/guides" },
   { icon: Bell, label: "Notifications", href: "/admin/notifications" },

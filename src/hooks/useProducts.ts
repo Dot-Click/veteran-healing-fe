@@ -1,10 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { productService } from '../services/productService';
 
 export function useProducts(category?: string) {
   return useQuery({
     queryKey: ['products', category ?? 'all'],
     queryFn: () => productService.getAll(category),
+    placeholderData: keepPreviousData,
   });
 }
 

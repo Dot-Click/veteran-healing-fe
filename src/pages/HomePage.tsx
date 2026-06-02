@@ -1,15 +1,18 @@
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Shield, Leaf, Users, Star, ChevronRight, ChevronLeft, Handshake, ChevronDown } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "../components/common/SocialIcons";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../components/common/ProductCard";
-import { FEATURED_PRODUCTS } from "../data/mockProducts";
+import { useHomepageFeatured } from "../hooks/useFeaturedProducts";
 import { ASSETS } from "../lib/assetPaths";
 import api from "../services/api";
+import ContentAreaLoader from "../components/common/ContentAreaLoader";
+import { useTopReviews } from "../hooks/useReviews";
+import { mapApiReviewToHomeCard } from "../types/review.types";
 
 const IMPACT_STATS = [
   { value: "22", label: "Veterans lost daily to suicide" },
@@ -47,7 +50,7 @@ const FAQ_ITEMS = [
     a: "Yes, all our products contain real psilocybin. We are dedicated to providing natural healing alternatives to support mental health and well-being, especially for veterans.",
   },
   {
-    q: "What is the dosage?",
+    q: "Do you offer local delivery?",
     a: "Dosage varies depending on individual sensitivity and goals. Our Free Microdose Guide provides comprehensive, step-by-step instructions on safe dosage and schedules.",
   },
   {
@@ -119,79 +122,6 @@ const HERO_SLIDES = [
   },
 ];
 
-const TESTIMONIALS = [
-  {
-    id: 1,
-    tag: "HOPE",
-    body: "I was at my lowest point when I found this community. The sacraments and the support have given me a new lease on life. I am forever grateful.",
-    author: "- Marcus V.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    tag: "FAITH",
-    body: "The transparency and integrity of this veteran-operated group is unmatched. They grow everything in-house and really care about us.",
-    author: "- Sarah T.",
-    rating: 5,
-  },
-  {
-    id: 3,
-    tag: "TRUST",
-    body: "Finally, something that works without the side effects of VA pharmaceuticals. The microdose guide was extremely helpful.",
-    author: "- David K.",
-    rating: 5,
-  },
-  {
-    id: 4,
-    tag: "HEALING",
-    body: "Finding natural alternatives grown by brothers who understand the struggle has made all the difference. Highly recommend.",
-    author: "- Jason L.",
-    rating: 5,
-  },
-  {
-    id: 5,
-    tag: "COMMUNITY",
-    body: "The private group support and direct accountability make this feel like a platoon again. I don't feel alone anymore.",
-    author: "- Robert B.",
-    rating: 5,
-  },
-  {
-    id: 6,
-    tag: "PEACE",
-    body: "My anxiety and hypervigilance have decreased significantly. I can sleep through the night and be present for my family.",
-    author: "- Daniel M.",
-    rating: 5,
-  },
-  {
-    id: 7,
-    tag: "STRENGTH",
-    body: "Veteran Healing is doing real work on the ground. Supporting their mission while receiving top-tier organic sacraments is a win-win.",
-    author: "- Austin B.",
-    rating: 5,
-  },
-  {
-    id: 8,
-    tag: "SUPPORT",
-    body: "Everything is grown with extreme care. The level of respect they show for the medicine and the veteran community is inspiring.",
-    author: "- Kevin M.",
-    rating: 5,
-  },
-  {
-    id: 9,
-    tag: "WELLNESS",
-    body: "A step-by-step approach to natural wellness that puts the veteran first. Grateful for their service and their dedication.",
-    author: "- Rebecca L.",
-    rating: 5,
-  },
-  {
-    id: 10,
-    tag: "PURPOSE",
-    body: "This organization saved my life. Knowing 100% of profits go to suicide prevention makes every donation count.",
-    author: "- Ethan B.",
-    rating: 5,
-  },
-];
-
 export default function HomePage() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -200,6 +130,17 @@ export default function HomePage() {
   const [guideEmail, setGuideEmail] = useState("");
   const [guideSubmitted, setGuideSubmitted] = useState(false);
   const [guideLoading, setGuideLoading] = useState(false);
+  const { data: topReviewsData, isLoading: reviewsLoading } = useTopReviews(10);
+  const { data: homepageFeatured, isLoading: featuredLoading } = useHomepageFeatured();
+
+  const featuredProducts = homepageFeatured?.homepage.map((p) => p.product) ?? [];
+  const socialPlacements = homepageFeatured?.social ?? [];
+  const DEFAULT_INSTAGRAM_URL = "https://www.instagram.com/veteranhealing";
+
+  const testimonials = useMemo(
+    () => (topReviewsData?.items ?? []).map(mapApiReviewToHomeCard),
+    [topReviewsData]
+  );
 
   const handleGuideSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,18 +181,25 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    setCurrentReviewIndex(0);
+  }, [testimonials.length]);
+
+  useEffect(() => {
+    if (testimonials.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentReviewIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+      setCurrentReviewIndex((prev) => (prev + 1) % testimonials.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, []);
+  }, [testimonials.length]);
 
   const prevReview = () => {
-    setCurrentReviewIndex((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
+    if (testimonials.length === 0) return;
+    setCurrentReviewIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
   const nextReview = () => {
-    setCurrentReviewIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+    if (testimonials.length === 0) return;
+    setCurrentReviewIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const activeSlide = HERO_SLIDES[currentSlideIndex];
@@ -298,18 +246,32 @@ export default function HomePage() {
               prevention.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/shop" className="btn-primary text-base px-8 py-4">
+              <Link
+                to="/shop"
+                className="btn-primary text-base px-8 py-4"
+                onClick={() => {
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 0);
+                }}
+              >
                 Shop Now
               </Link>
               <Link
                 to="/free-guide"
                 className="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white hover:text-brand-primary transition-colors duration-200 inline-flex items-center gap-2 text-base"
+                onClick={() => {
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 200);
+                }}
               >
                 Free Microdose Guide
               </Link>
             </div>
           </div>
         </div>
+   
 
         {/* Slide Indicators / Dots */}
         <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2.5 z-20">
@@ -336,21 +298,32 @@ export default function HomePage() {
               Find Relief From Anxiety, Depression &amp; PTSD with Veteran Grown Organic Mushroom Sacraments!
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURED_PRODUCTS.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="cursor-pointer"
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+          {featuredLoading ? (
+            <ContentAreaLoader variant="skeleton-cards" count={4} />
+          ) : featuredProducts.length === 0 ? (
+            <p className="text-center text-gray-300 py-8">Featured sacraments coming soon.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  className="cursor-pointer"
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link
               to="/shop"
+              onClick={() => {
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 200);
+              }}
               className="inline-flex items-center gap-2 bg-brand-primary text-brand-light border-2 border-light hover:bg-white hover:text-brand-primary hover:border-white transition-all duration-300 font-bold px-8 py-4 rounded-lg shadow-md"
             >
               View All Sacraments
@@ -460,6 +433,11 @@ export default function HomePage() {
             <div className="flex justify-center">
               <Link
                 to="/reviews"
+                onClick={() => {
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 200);
+                }}
                 className="btn-primary bg-brand-primary text-white hover:bg-brand-cta transition-colors duration-300 cursor-pointer hover:bg-white hover:border-brand-dark hover:text-brand-dark border-2 border-brand-primary"
               >
                 Read All Reviews
@@ -468,61 +446,73 @@ export default function HomePage() {
           </div>
 
           <div className="relative max-w-6xl mx-auto px-4 md:px-12">
-            {/* Carousel Navigation Arrow Controls */}
-            <button
-              onClick={prevReview}
-              className="absolute left-0 md:left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10"
-              aria-label="Previous review"
-            >
-              <ChevronLeft size={20} className="text-brand-cta" />
-            </button>
+            {reviewsLoading ? (
+              <ContentAreaLoader
+                variant="skeleton-cards"
+                count={3}
+                className="max-w-4xl mx-auto grid-cols-1 md:grid-cols-3"
+              />
+            ) : testimonials.length === 0 ? (
+              <p className="text-center text-gray-300 py-12">Reviews coming soon.</p>
+            ) : (
+              <>
+                {/* Carousel Navigation Arrow Controls */}
+                <button
+                  onClick={prevReview}
+                  className="absolute left-0 md:left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10"
+                  aria-label="Previous review"
+                >
+                  <ChevronLeft size={20} className="text-brand-cta" />
+                </button>
 
-            <button
-              onClick={nextReview}
-              className="absolute right-0 md:right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10"
-              aria-label="Next review"
-            >
-              <ChevronRight size={20} className="text-brand-cta" />
-            </button>
+                <button
+                  onClick={nextReview}
+                  className="absolute right-0 md:right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-brand-border/40 shadow-md flex items-center justify-center hover:bg-brand-cream transition-colors duration-200 z-10"
+                  aria-label="Next review"
+                >
+                  <ChevronRight size={20} className="text-brand-cta" />
+                </button>
 
-            {/* Testimonials Slide Frame */}
-            <div className="overflow-hidden w-full">
-              <div
-                className="flex transition-transform duration-500 ease-in-out gap-6"
-                style={{
-                  transform: `translateX(-${currentReviewIndex * (100 / cardsPerView)}%)`,
-                }}
-              >
-                {TESTIMONIALS.map((review) => (
+                {/* Testimonials Slide Frame */}
+                <div className="overflow-hidden w-full">
                   <div
-                    key={review.id}
-                    className="w-full flex-shrink-0"
+                    className="flex transition-transform duration-500 ease-in-out gap-6"
                     style={{
-                      width: `calc(${100 / cardsPerView}% - ${((cardsPerView - 1) * 24) / cardsPerView}px)`,
+                      transform: `translateX(-${currentReviewIndex * (100 / cardsPerView)}%)`,
                     }}
                   >
-                    <div className="border border-brand-border/20 rounded-2xl p-6 md:p-8 bg-brand-cream shadow-sm flex flex-col justify-between min-h-[260px] h-full transition-all duration-300 hover:shadow-md">
-                      <div>
-                        <div className="flex gap-1 mb-4">
-                          {Array.from({ length: review.rating }).map((_, i) => (
-                            <Star key={i} size={16} className="fill-brand-gold text-brand-gold" />
-                          ))}
+                    {testimonials.map((review) => (
+                      <div
+                        key={review.id}
+                        className="w-full flex-shrink-0"
+                        style={{
+                          width: `calc(${100 / cardsPerView}% - ${((cardsPerView - 1) * 24) / cardsPerView}px)`,
+                        }}
+                      >
+                        <div className="border border-brand-border/20 rounded-2xl p-6 md:p-8 bg-brand-cream shadow-sm flex flex-col justify-between min-h-[260px] h-full transition-all duration-300 hover:shadow-md">
+                          <div>
+                            <div className="flex gap-1 mb-4">
+                              {Array.from({ length: review.rating }).map((_, i) => (
+                                <Star key={i} size={16} className="fill-brand-gold text-brand-gold" />
+                              ))}
+                            </div>
+                            <span className="text-brand-gold font-bold text-xs tracking-widest uppercase block mb-3">
+                              {review.tag}
+                            </span>
+                            <p className="text-gray-700 text-sm leading-relaxed mb-6 italic">
+                              "{review.body}"
+                            </p>
+                          </div>
+                          <p className="font-semibold text-brand-dark text-sm border-t border-brand-border/10 pt-4">
+                            {review.author}
+                          </p>
                         </div>
-                        <span className="text-brand-gold font-bold text-xs tracking-widest uppercase block mb-3">
-                          {review.tag}
-                        </span>
-                        <p className="text-gray-700 text-sm leading-relaxed mb-6 italic">
-                          "{review.body}"
-                        </p>
                       </div>
-                      <p className="font-semibold text-brand-dark text-sm border-t border-brand-border/10 pt-4">
-                        {review.author}
-                      </p>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -565,13 +555,24 @@ export default function HomePage() {
               </ul>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/about" className="btn-primary hover:bg-brand-primary text-white py-3 px-6 rounded-lg text-center font-semibold transition-all">
+                <Link to="/about" 
+                onClick={() => {
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 200);
+                }}
+                className="btn-primary hover:bg-brand-primary text-white py-3 px-6 rounded-lg text-center font-semibold transition-all">
                   Meet Our Team
                 </Link>
                 <a
                   href="https://www.facebook.com/VeteranHealing"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => {
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 200);
+                  }}
                   className="btn-secondary flex items-center justify-center gap-2 hover:bg-brand-primary hover:text-white transition-all py-3 px-6 rounded-lg border-2 border-brand-primary text-brand-primary font-semibold"
                 >
                   <FacebookIcon size={16} />
@@ -632,7 +633,13 @@ export default function HomePage() {
           </div>
 
           <div className="flex justify-center mt-12">
-            <Link to="/about" className="btn-primary text-black border border-white py-3 px-6 rounded-lg text-center font-semibold transition-all hover:text-brand-primary hover:border-gray-100 hover:bg-gray-100/90 ">
+            <Link to="/about" 
+            onClick={() => {
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 200);
+            }}
+            className="btn-primary text-black border border-white py-3 px-6 rounded-lg text-center font-semibold transition-all hover:text-brand-primary hover:border-gray-100 hover:bg-gray-100/90 ">
               Learn About Our Mission
             </Link>
           </div>
@@ -640,7 +647,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── Impact Stats ─── */}
-      <section className="bg-brand-cream-light py-20 lg:py-28" aria-label="Impact and statistics"
+      <section className="bg-brand-cream/90 py-20 lg:py-28" aria-label="Impact and statistics"
         style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'contain' }}>
         <div className="container-site">
           {/* Top Images Grid */}
@@ -737,6 +744,11 @@ export default function HomePage() {
             <div className="flex justify-center">
               <Link
                 to="/affiliate"
+                onClick={() => {
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 200);
+                }}
                 className="inline-flex items-center gap-2 bg-white text-brand-primary font-bold px-8 py-4 rounded-lg shadow-md hover:bg-brand-dark hover:text-white transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 Become an Affiliate
@@ -758,33 +770,43 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-5xl mx-auto">
-            {[
-              ASSETS.GUIDE_BG,
-              ASSETS.GALLERY[0],
-              ASSETS.GALLERY[1],
-              ASSETS.GALLERY[2],
-              ASSETS.GALLERY[3]
-            ].map((src, idx) => (
-              <a
-                key={idx}
-                href="https://www.instagram.com/veteranhealing"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative group aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 block"
-              >
-                <img
-                  src={src}
-                  alt={`Instagram post ${idx + 1}`}
-                  className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-brand-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <InstagramIcon size={32} className="text-white transform scale-75 group-hover:scale-100 transition-transform duration-300" />
-                </div>
-              </a>
-            ))}
-          </div>
+          {featuredLoading ? (
+            <ContentAreaLoader
+              variant="skeleton-cards"
+              count={5}
+              className="max-w-5xl mx-auto grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
+            />
+          ) : socialPlacements.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">Follow us on Instagram for updates.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-5xl mx-auto">
+              {socialPlacements.map((placement, idx) => (
+                <a
+                  key={placement.id}
+                  href={placement.linkUrl ?? DEFAULT_INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative group aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 block"
+                >
+                  <img
+                    src={placement.product.images[0]}
+                    alt={placement.product.name}
+                    className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-brand-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <InstagramIcon
+                      size={32}
+                      className="text-white transform scale-75 group-hover:scale-100 transition-transform duration-300"
+                    />
+                  </div>
+                  <span className="sr-only">
+                    {placement.product.name} — social post {idx + 1}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -810,6 +832,11 @@ export default function HomePage() {
           <div className="flex justify-center">
             <Link
               to="/free-guide"
+              onClick={() => {
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 200);
+              }}
               className="inline-flex items-center gap-2 bg-[#F5A623] text-brand-primary hover:bg-white hover:text-brand-primary transition-all duration-300 font-extrabold px-10 py-4 rounded-lg shadow-lg transform hover:-translate-y-0.5 uppercase tracking-wider text-sm md:text-base"
             >
               GET MY FREE COPY NOW

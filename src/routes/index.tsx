@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
+import RouteLoadingShell from "../components/common/RouteLoadingShell";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
@@ -16,10 +17,12 @@ const ContactPage = lazy(() => import("../pages/ContactPage"));
 const StatementOfFaithPage = lazy(() => import("../pages/StatementOfFaithPage"));
 const AdminDashboardPage = lazy(() => import("../pages/AdminDashboardPage"));
 const AdminProductsPage = lazy(() => import("../pages/AdminProductsPage"));
+const AdminFeaturedPage = lazy(() => import("../pages/AdminFeaturedPage"));
 const AdminOrdersPage = lazy(() => import("../pages/AdminOrdersPage"));
 const AdminDonationsPage = lazy(() => import("../pages/AdminDonationsPage"));
 const AdminAffiliatesPage = lazy(() => import("../pages/AdminAffiliatesPage"));
 const AdminContactPage = lazy(() => import("../pages/AdminContactPage"));
+const AdminReviewsPage = lazy(() => import("../pages/AdminReviewsPage"));
 const AdminSettingsPage = lazy(() => import("../pages/AdminSettingsPage"));
 const AdminGuidePage = lazy(() => import("../pages/AdminGuidePage"));
 const AdminNotificationsPage = lazy(() => import("../pages/AdminNotificationsPage"));
@@ -28,17 +31,9 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const AuthPage = lazy(() => import("../pages/AuthPage"));
 const UserDashboardPage = lazy(() => import("../pages/UserDashboardPage"));
 
-function PageLoader() {
-  return (
-    <div className="min-h-[50vh] flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-brand-cta border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
-}
-
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<RouteLoadingShell />}>
       <Routes>
         {/* Customer pages */}
         <Route path="/" element={<HomePage />} />
@@ -90,6 +85,14 @@ export default function AppRoutes() {
           }
         />
         <Route
+          path="/admin/featured"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminFeaturedPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/orders"
           element={
             <ProtectedRoute requireAdmin>
@@ -118,6 +121,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute requireAdmin>
               <AdminContactPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reviews"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminReviewsPage />
             </ProtectedRoute>
           }
         />
