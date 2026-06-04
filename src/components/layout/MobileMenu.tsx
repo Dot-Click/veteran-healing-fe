@@ -34,14 +34,17 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         aria-label="Mobile navigation"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-brand-accent">
-          <Link to="/" onClick={onClose} className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm overflow-hidden">
-              <img src="/logo.webp" alt="Veteran Healing" className="w-8 h-8 object-contain" />
+        <div className="flex items-center justify-between p-4 border-b border-brand-accent/60">
+          <Link to="/" onClick={onClose} className="flex items-center gap-2.5">
+            <img
+              src="/logo.webp"
+              alt="Veteran Healing"
+              className="w-9 h-9 object-contain flex-shrink-0 bg-white rounded-full"
+            />
+            <div className="flex flex-col leading-none">
+              <span className="text-white font-bold text-sm tracking-widest uppercase">Veteran</span>
+              <span className="text-brand-gold font-bold text-sm tracking-widest uppercase">Healing</span>
             </div>
-            <span className="text-white font-semibold text-sm tracking-wide">
-              Veteran Healing
-            </span>
           </Link>
           <button
             onClick={onClose}

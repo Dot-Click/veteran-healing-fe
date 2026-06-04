@@ -14,5 +14,5 @@ export function isAdminRole(role?: string | null) {
 }
 
 export function getDashboardPath(role?: string | null) {
-  return isAdminRole(role) ? "/admin" : "/dashboard";
+  return isAdminRole(role) ? "/admin" : "/";
 }

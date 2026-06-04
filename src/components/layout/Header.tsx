@@ -6,7 +6,6 @@ import { NAV_LINKS } from "../../lib/constants";
 import { cn } from "../../lib/utils";
 import MobileMenu from "./MobileMenu";
 import { useCart } from "../../hooks/useCart";
-import { ASSETS } from "../../lib/assetPaths";
 import { useAuth } from "../../contexts/AuthContext";
 import { useUnreadCount } from "../../hooks/useNotifications";
 import toast from "react-hot-toast";
@@ -16,6 +15,7 @@ import ProfileModal from "../common/ProfileModal";
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const isHome = location.pathname === "/";
   const navigate = useNavigate();
   const { totalItems } = useCart();
   const { user, isAuthenticated, signout } = useAuth();
@@ -37,15 +37,27 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-brand-cream-light border-b border-brand-border sticky top-0 z-30 shadow-sm"
-        style={{ backgroundImage: `url(${ASSETS.HEADER_BG})`, backgroundSize: 'cover' }}>
+      <header
+        className={cn(
+          "sticky top-0 z-40 border-b bg-brand-primary text-white shadow-[0_10px_30px_rgba(17,59,44,0.18)] transition-all duration-300",
+          isHome ? "border-white/10" : "border-brand-border/20"
+        )}
+        style={{ backgroundImage: `linear-gradient(135deg, rgba(18, 58, 44, 0.98), rgba(18, 58, 44, 0.98))`, backgroundSize: 'cover' }}
+      >
         <div className="container-site">
           <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* Logo */}
             <SmoothNavLink to="/" className="flex items-center gap-2 flex-shrink-0 group">
-              <img src="/logo.webp" alt="Veteran Healing Logo" className="w-[70px]" />
-              {/* <img src={veter} alt="" /> */}
+              <img
+                src="/logo.webp"
+                alt="Veteran Healing Logo"
+                className="w-[40px] lg:w-[70px] bg-white rounded-full"
+              />
+              <div className="flex flex-col leading-none">
+                <span className="text-white font-bold text-[11px] lg:text-sm tracking-widest uppercase">Veteran</span>
+                <span className="text-brand-gold font-bold text-[11px] lg:text-sm tracking-widest uppercase">Healing</span>
+              </div>
             </SmoothNavLink>
 
             {/* Desktop nav */}
@@ -55,10 +67,10 @@ export default function Header() {
                   key={link.href}
                   to={link.href}
                   className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-md transition-colors",
+                    "px-4 py-2 text-sm font-semibold rounded-full border transition-all duration-200",
                     location.pathname === link.href
-                      ? "text-brand-cta font-semibold underline underline-offset-4"
-                      : "text-brand-dark hover:text-brand-cta"
+                      ? "bg-white text-brand-primary border-white shadow-sm"
+                      : "text-white border-transparent hover:bg-white/10 hover:text-brand-gold"
                   )}
                 >
                   {link.label}
@@ -71,7 +83,7 @@ export default function Header() {
               {isAuthenticated && (
                 <Link
                   to="/cart"
-                  className="relative p-2 text-brand-dark hover:text-brand-cta transition-colors"
+                  className={cn("relative p-2 transition-colors text-white hover:text-brand-gold")}
                   aria-label={`Shopping cart, ${totalItems} items`}
                 >
                   <ShoppingCart size={20} />
@@ -86,7 +98,7 @@ export default function Header() {
               {isAuthenticated && (
                 <Link
                   to="/notifications"
-                  className="relative p-2 text-brand-dark hover:text-brand-cta transition-colors"
+                  className={cn("relative p-2 transition-colors text-white hover:text-brand-gold")}
                   aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
                 >
                   <Bell size={20} />
@@ -105,7 +117,7 @@ export default function Header() {
               >
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="p-2 text-brand-dark hover:text-brand-cta transition-colors flex items-center justify-center focus:outline-none"
+                  className={cn("p-2 transition-colors flex items-center justify-center focus:outline-none text-white hover:text-brand-gold ")}
                   aria-label="User Account Menu"
                 >
                   {isAuthenticated && user?.image ? (
@@ -186,7 +198,7 @@ export default function Header() {
               </div>
               {/* Mobile hamburger */}
               <button
-                className="lg:hidden p-2 text-brand-primary hover:text-brand-cta transition-colors"
+                className={cn("lg:hidden p-2 transition-colors", isHome ? "text-white hover:text-brand-gold" : "text-brand-primary hover:text-brand-cta")}
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open navigation menu"
               >

@@ -205,7 +205,7 @@ export default function HomePage() {
     <MainLayout>
       {/* ─── Hero ─── */}
       <section
-        className="relative min-h-[60vh] lg:min-h-[70vh] flex items-center bg-brand-primary overflow-hidden w-full"
+        className="relative h-[calc(100vh-7rem)] max-h-[calc(100vh-7rem)] flex items-center bg-brand-primary overflow-hidden w-full before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(245,166,35,0.18),_transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_20%)] before:pointer-events-none"
         aria-label="Hero section"
       >
         {/* Background Slides */}
@@ -228,24 +228,27 @@ export default function HomePage() {
         })}
 
         {/* Content Container */}
-        <div className="relative container-site py-24 lg:py-32 z-10 w-full">
-          <div key={currentSlideIndex} className="max-w-3xl animate-slide-up">
+        <div className="relative container-site py-6 lg:py-10 z-10 w-full">
+          <div key={currentSlideIndex} className="max-w-4xl animate-slide-up rounded-[24px] sm:rounded-[32px] border border-white/10 bg-black/18 p-4 sm:p-8 lg:p-10 shadow-[0_24px_60px_rgba(0,0,0,0.28)] backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-[0.20em] sm:tracking-[0.25em] text-brand-gold mb-3 sm:mb-5">
+              Veteran Healing Mission
+            </div>
             {activeSlide.subheading && (
-              <h5 className="text-brand-gold text-lg lg:text-xl font-semibold mb-3 tracking-wide uppercase">
+              <h5 className="text-brand-gold text-sm sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-3 tracking-wide uppercase">
                 {activeSlide.subheading}
               </h5>
             )}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold text-white leading-tight mb-3 sm:mb-6 max-w-3xl">
               {activeSlide.heading}
             </h1>
-            <p className="text-gray-200 text-lg mb-8 max-w-xl">
+            <p className="text-gray-100 text-sm sm:text-lg mb-4 sm:mb-8 max-w-2xl leading-relaxed">
               By Veterans, For Veterans. 100% of profits support veteran suicide awareness and
-              prevention.
+              prevention through a modern, trustworthy, mission-first experience.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 to="/shop"
-                className="btn-primary text-base px-8 py-4"
+                className="btn-primary text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 shadow-[0_12px_24px_rgba(15,64,47,0.35)] hover:-translate-y-0.5"
                 onClick={() => {
                   setTimeout(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -256,7 +259,7 @@ export default function HomePage() {
               </Link>
               <Link
                 to="/free-guide"
-                className="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white hover:text-brand-primary transition-colors duration-200 inline-flex items-center gap-2 text-base"
+                className="border border-white/80 bg-white/8 text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-full hover:bg-white hover:text-brand-primary transition-all duration-200 inline-flex items-center gap-2 text-sm sm:text-base shadow-[0_12px_24px_rgba(0,0,0,0.18)]"
                 onClick={() => {
                   setTimeout(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -287,13 +290,16 @@ export default function HomePage() {
       </section>
 
       {/* ─── Featured Products ─── */}
-      <section className="bg-brand-primary py-16 lg:py-24 text-white relative" aria-label="Featured Sacraments"
+      <section className="bg-brand-primary py-16 lg:py-24 text-white relative overflow-hidden" aria-label="Featured Sacraments"
         style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'cover' }}>
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(17,59,44,0.92),rgba(17,59,44,0.86))]" />
         <div className="container-site relative z-10">
-          <div className="text-center max-w-4xl mx-auto mb-16">
+          <div className="text-center max-w-4xl mx-auto mb-14">
+            <span className="inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-brand-gold mb-4">Featured collection</span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
               Find Relief From Anxiety, Depression &amp; PTSD with Veteran Grown Organic Mushroom Sacraments!
             </h2>
+            <p className="mt-4 text-base text-gray-200 max-w-2xl mx-auto">A clearer, calmer shopping experience with premium cards and a more refined path from mission to product.</p>
           </div>
           {featuredLoading ? (
             <ContentAreaLoader variant="skeleton-cards" count={4} />
@@ -321,7 +327,7 @@ export default function HomePage() {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }, 200);
               }}
-              className="inline-flex items-center gap-2 bg-brand-primary text-brand-light border-2 border-light hover:bg-white hover:text-brand-primary hover:border-white transition-all duration-300 font-bold px-8 py-4 rounded-lg shadow-md"
+              className="inline-flex items-center gap-2 bg-brand-primary text-brand-light border border-white/20 hover:bg-white hover:text-brand-primary hover:border-white transition-all duration-300 font-bold px-8 py-4 rounded-full shadow-[0_16px_30px_rgba(0,0,0,0.18)]"
             >
               View All Sacraments
             </Link>
@@ -330,13 +336,14 @@ export default function HomePage() {
       </section>
 
       {/* ─── Free Guide Banner ─── */}
-      <section className="bg-brand-cream-light py-16 lg:py-24 border-y border-brand-border/20"
+      <section className="bg-brand-cream-light py-20 lg:py-24 border-y border-brand-border/25 relative overflow-hidden"
         style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'cover' }}>
-        <div className="container-site">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(245,245,220,0.92),rgba(252,252,241,0.88))]" />
+        <div className="container-site relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16 max-w-5xl mx-auto">
             {/* Left Image Column */}
             <div className="flex-1 w-full max-w-md lg:max-w-none">
-              <div className="relative group overflow-hidden rounded-2xl shadow-xl border border-brand-border/30 bg-white p-3">
+              <div className="relative group overflow-hidden rounded-[28px] shadow-[0_24px_50px_rgba(17,59,44,0.18)] border border-brand-border/30 bg-white p-3">
                 <img
                   src={ASSETS.GUIDE_BG}
                   alt="Free Veteran Wellness Guide Book Cover"
@@ -348,21 +355,21 @@ export default function HomePage() {
 
             {/* Right Form Column */}
             <div className="flex-1 w-full">
-              <span className="text-brand-cta text-xs font-bold uppercase tracking-wider block mb-3">
+              <span className="inline-flex items-center rounded-full border border-brand-cta/10 bg-brand-cta/8 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-brand-cta mb-4">
                 LIMITED QUANTITIES. FREE FOR ACTIVE DUTY, VETERANS &amp; IMMEDIATE FAMILY MEMBERS
               </span>
-              <h2 className="text-3xl lg:text-4xl font-bold text-brand-dark mb-6 leading-tight">
+              <h2 className="text-3xl lg:text-4xl font-bold text-brand-dark mb-6 leading-tight tracking-tight">
                 Free Comprehensive Microdose Guide + Audiobook
               </h2>
-              <ul className="space-y-4 text-gray-700 text-base mb-8">
+              <ul className="space-y-3 text-gray-700 text-base mb-8">
                 {[
                   "Full guide on how to integrate microdosing safely and effectively",
                   "Step-by-step instructions on dosage, schedules, and mindfulness",
                   "Audiobook version included for listening on the go",
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <span className="text-brand-cta font-bold text-lg mt-0.5">✓</span>
-                    <span className="font-medium">{item}</span>
+                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-brand-border/20 bg-white/90 p-4 shadow-[0_10px_24px_rgba(17,59,44,0.08)]">
+                    <span className="mt-0.5 rounded-full bg-brand-cta/10 px-2 py-1 text-brand-cta text-sm font-bold">✓</span>
+                    <span className="font-medium text-brand-dark">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -393,25 +400,25 @@ export default function HomePage() {
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleGuideSubmit} className="max-w-md space-y-3">
+                <form onSubmit={handleGuideSubmit} className="max-w-md space-y-3 animate-slide-up">
                   <input
                     type="email"
                     placeholder="Enter your email"
                     value={guideEmail}
                     onChange={(e) => setGuideEmail(e.target.value)}
-                    className="w-full px-5 py-4 border border-brand-border/50 rounded-lg text-brand-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-cta focus:border-transparent bg-white shadow-inner"
+                    className="w-full px-5 py-4 border border-brand-border/60 rounded-2xl text-brand-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-cta focus:border-transparent bg-white/95 shadow-[0_10px_24px_rgba(17,59,44,0.08)]"
                     required
                   />
                   <button
                     type="submit"
                     disabled={guideLoading}
-                    className="w-full btn-primary bg-brand-cta hover:bg-brand-primary text-white font-semibold py-4 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="w-full btn-primary bg-brand-cta hover:bg-brand-primary text-white font-semibold py-4 rounded-2xl shadow-[0_12px_24px_rgba(15,64,47,0.25)] transition-all duration-300 transform hover:-translate-y-0.5 justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                   >
                     {guideLoading ? "Sending..." : "GET MY FREE COPY NOW"}
                   </button>
                 </form>
               )}
-              <p className="text-gray-400 text-xs mt-3">100% free. No spam. Just genuine support.</p>
+              <p className="text-brand-dark/70 text-xs mt-3 tracking-wide">100% free. No spam. Just genuine support.</p>
             </div>
           </div>
         </div>
@@ -419,8 +426,10 @@ export default function HomePage() {
 
       {/* ─── Social Proof / Reviews Carousel ─── */}
       <section className="bg-brand-primary py-20 lg:py-28 relative overflow-hidden" aria-label="Reviews and Testimonials">
-        <div className="container-site">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(245,166,35,0.12),_transparent_24%)]" />
+        <div className="container-site relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-16 rounded-[32px] border border-white/10 bg-white/8 p-8 shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+            <span className="inline-flex items-center rounded-full border border-brand-gold/30 bg-brand-gold/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-brand-gold mb-4">Community trust</span>
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
               Trust begins with transparency at Veteran Healing!
             </h1>
@@ -488,7 +497,7 @@ export default function HomePage() {
                           width: `calc(${100 / cardsPerView}% - ${((cardsPerView - 1) * 24) / cardsPerView}px)`,
                         }}
                       >
-                        <div className="border border-brand-border/20 rounded-2xl p-6 md:p-8 bg-brand-cream shadow-sm flex flex-col justify-between min-h-[260px] h-full transition-all duration-300 hover:shadow-md">
+                        <div className="border border-brand-border/20 rounded-[28px] p-6 md:p-8 bg-white/95 shadow-[0_20px_40px_rgba(17,59,44,0.14)] flex flex-col justify-between min-h-[260px] h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(17,59,44,0.18)]">
                           <div>
                             <div className="flex gap-1 mb-4">
                               {Array.from({ length: review.rating }).map((_, i) => (
@@ -517,8 +526,9 @@ export default function HomePage() {
       </section>
 
       {/* ─── About / Mission ─── */}
-      <section className="bg-white py-20 lg:py-28 overflow-hidden" style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'cover' }}>
-        <div className="container-site">
+      <section className="bg-white py-20 lg:py-28 overflow-hidden relative" style={{ backgroundImage: `url(${ASSETS.CONTACT_BG})`, backgroundSize: 'cover' }}>
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(245,245,220,0.88))]" />
+        <div className="container-site relative z-10">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             {/* Left Column - Content */}
             <div className="flex-1 max-w-xl">
@@ -529,7 +539,7 @@ export default function HomePage() {
                 Discover the Essence of Veteran Healing
               </h2>
 
-              <ul className="space-y-6 mb-8 text-gray-700">
+              <ul className="space-y-4 mb-8 text-gray-700">
                 <li className="flex items-start gap-4">
                   <span className="text-brand-cta text-xl font-bold mt-0.5">✓</span>
                   <div>
@@ -580,9 +590,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Column - Images with beautiful hover effect */}
-            <div className="flex-1 grid grid-cols-2 gap-4 w-full relative">
-              <div className="relative group overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+            {/* Right Column - Images with stagger effect */}
+            <div className="flex-1 grid grid-cols-2 gap-4 w-full relative pb-10">
+              <div className="relative group overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 -translate-y-6 sm:-translate-y-8">
                 <img
                   src={ASSETS.TEAM_1}
                   alt="Veterans serving veterans"
@@ -591,7 +601,7 @@ export default function HomePage() {
                 />
                 <div className="absolute inset-0 bg-brand-primary/10 group-hover:bg-transparent transition-colors duration-500" />
               </div>
-              <div className="relative group overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 mt-8">
+              <div className="relative group overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
                 <img
                   src={ASSETS.MUSHROOM_PRODUCT}
                   alt="Veteran Healing products"
@@ -606,7 +616,8 @@ export default function HomePage() {
       </section>
 
       {/* ─── What Veteran Healing Is ─── */}
-      <section className="bg-brand-primary py-20 lg:py-28 border-y border-brand-border/20">
+      <section className="bg-brand-primary py-20 lg:py-28 border-y border-brand-border/20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(245,166,35,0.10),_transparent_25%)]" />
         <div className="container-site">
           <h2 className="text-3xl lg:text-4xl font-bold text-white text-center mb-4">
             What Veteran Healing Is
@@ -620,7 +631,7 @@ export default function HomePage() {
             {MISSION_PILLARS.map((pillar) => (
               <div
                 key={pillar.title}
-                className="group bg-gray-300 rounded-2xl p-8 shadow-sm border border-brand-border/20 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                className="group rounded-[28px] bg-white/95 p-8 shadow-[0_18px_40px_rgba(0,0,0,0.14)] border border-white/30 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_24px_50px_rgba(0,0,0,0.18)]"
               >
                 <div className="w-16 h-16 rounded-full bg-brand-cream flex items-center justify-center mx-auto mb-6 text-brand-cta transition-colors duration-300 group-hover:bg-brand-cta group-hover:text-white">
                   <pillar.icon size={24} />
@@ -760,11 +771,15 @@ export default function HomePage() {
 
 
       {/* ─── Social Media Section ─── */}
-      <section className="bg-white py-16 border-t border-brand-border/10" aria-label="Social Media Feed">
+      <section className="relative bg-white py-16 border-t border-brand-border/10" aria-label="Social Media Feed">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-border/30 to-transparent" />
         <div className="container-site">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-brand-dark flex items-center justify-center gap-2">
-              <InstagramIcon size={28} className="text-brand-cta text-brand-primary" />
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="inline-flex items-center rounded-full border border-brand-border/20 bg-brand-cream-light px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-brand-cta">Instagram</span>
+              <InstagramIcon size={22} className="text-brand-cta" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-brand-dark">
               Follow Us on Instagram
             </h2>
           </div>
@@ -778,14 +793,14 @@ export default function HomePage() {
           ) : socialPlacements.length === 0 ? (
             <p className="text-center text-gray-500 py-8">Follow us on Instagram for updates.</p>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-5xl mx-auto">
               {socialPlacements.map((placement, idx) => (
                 <a
                   key={placement.id}
                   href={placement.linkUrl ?? DEFAULT_INSTAGRAM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative group aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 block"
+                  className="relative group aspect-square rounded-[22px] overflow-hidden shadow-[0_14px_30px_rgba(17,59,44,0.12)] hover:shadow-[0_20px_40px_rgba(17,59,44,0.18)] transition-all duration-300 block border border-brand-border/10"
                 >
                   <img
                     src={placement.product.images[0]}
@@ -893,7 +908,7 @@ export default function HomePage() {
 
       {/* ─── Payment Methods ─── */}
       <section className="bg-gray-200 py-16 border-t border-brand-border/10">
-        <div className="container-site text-center max-w-3xl mx-auto">
+        <div className="container-site text-center max-w-3xl mx-auto rounded-[32px] border border-brand-border/10 bg-white/80 p-8 shadow-[0_18px_40px_rgba(17,59,44,0.10)]">
           <h2 className="text-4xl font-bold text-brand-dark mb-2">
             Safe and Secure Payment Options
           </h2>

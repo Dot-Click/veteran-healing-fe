@@ -2,7 +2,7 @@ import { TOP_BAR_ITEMS } from "../../lib/constants";
 
 export default function TopBar() {
   return (
-    <div className="bg-brand-dark text-white text-xs py-2 overflow-hidden">
+    <div className="bg-brand-primary/95 text-white text-xs py-2 overflow-hidden border-b border-white/10 backdrop-blur-xl">
       <div className="container-site">
         {/* Mobile: scrolling marquee */}
         <div className="flex sm:hidden overflow-hidden">
